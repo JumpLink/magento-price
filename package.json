@@ -4,7 +4,10 @@
   "description": "demo app of node-webkit",
   "version": "0.0.1",
   "dependencies": {
-  	"nw-gyp": "*"
+  	"nw-gyp": "*",
+    "async": "*",
+    "asyncblock": "*",
+    "magento": "JumpLink/node-magento"
   },
   "keywords": [ "demo", "node-webkit" ],
   "window": {

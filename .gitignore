@@ -12,4 +12,7 @@ logs
 results
 core
 
+node_modules/*
+
 npm-debug.log
+config.json

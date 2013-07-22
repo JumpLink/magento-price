@@ -1,17 +1,16 @@
 <!DOCTYPE html>
-<html ng-app>
+<html lang="en" ng-app="app">
   <head>
     <meta charset="UTF-8" />
     <title>My App</title>
     <link rel="stylesheet/less" href="style.less" type="text/css" /> 
   </head>
+  <script src="less.min.js"></script>
+  <script src="angular.min.js"></script>
+  <script src="app.js"></script>
   <body>
-    <div ng-controller="AppCtrl">
-      <input ng-model="name" type="text">
-      <p>Hello, {{name}}!</p>
-    </div>
-    <script src="less.min.js"></script>
-    <script src="angular.min.js"></script>
-    <script src="app.js"></script>
+      <div class="container" ng-view>
+        
+      </div>
   </body>
 </html>

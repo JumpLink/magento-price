@@ -3,6 +3,7 @@ run:
 
 node_modules:
 	npm install
+	cd node_modules/magento; npm install;
 
 # required by valabind
 # ref: node_modules

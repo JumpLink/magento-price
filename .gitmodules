@@ -1,0 +1,6 @@
+[submodule "data/bootstrap"]
+	path = data/bootstrap
+	url = git://github.com/twitter/bootstrap.git
+[submodule "node_modules/magento"]
+	path = node_modules/magento
+	url = git@github.com:JumpLink/node-magento.git
