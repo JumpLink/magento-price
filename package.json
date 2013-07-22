@@ -4,10 +4,7 @@
   "description": "demo app of node-webkit",
   "version": "0.0.1",
   "dependencies": {
-  	"nw-gyp": "*",
-    "ref-struct": "0.0.4",
-    "ref": "~0.1.3",
-    "ffi": "~1.2.0"
+  	"nw-gyp": "*"
   },
   "keywords": [ "demo", "node-webkit" ],
   "window": {
