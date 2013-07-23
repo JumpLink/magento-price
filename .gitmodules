@@ -4,3 +4,6 @@
 [submodule "node_modules/magento"]
 	path = node_modules/magento
 	url = git@github.com:JumpLink/node-magento.git
+[submodule "data/font-awesome"]
+	path = data/font-awesome
+	url = git@github.com:FortAwesome/Font-Awesome.git
