@@ -1,0 +1,7 @@
+.well
+	ul.nav.nav-pills.nav-stacked
+		li
+			input.form-control(type="text", ng-model="sku", placeholder="SKU or Name")
+		li(ng-repeat="product in products | filter:sku | limitTo:100")
+			a(ng-click="load_product({{ product.product_id }}, 'shop_de')", href="", title='"{{ product.sku }}" - {{ product.name }}')
+				| {{ product.name }}

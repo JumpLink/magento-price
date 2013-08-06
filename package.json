@@ -1,17 +1,20 @@
 {
-  "main": "data/index.html",
-  "name": "nw-demo",
-  "description": "demo app of node-webkit",
+  "main": "app/index.html",
+  "name": "Magento Desktop",
+  "description": "Manage your Magento Shop",
   "version": "0.0.1",
   "dependencies": {
   	"nw-gyp": "*",
     "async": "*",
     "asyncblock": "*",
-    "magento": "JumpLink/node-magento"
+    "magento": "JumpLink/node-magento",
+    "libnotify": "*"
   },
-  "keywords": [ "demo", "node-webkit" ],
+  "keywords": [ "Magento", "Desktop" ],
   "window": {
-    "icon": "",
+    "title": "Magento Desktop",
+    "icon": "app/images/magento-logo.png",
+    "fullscreen": false,
     "toolbar": true,
     "frame": true
   },

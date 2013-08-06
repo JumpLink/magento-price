@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magento Desktop</title>
+    <link rel="stylesheet/less" type="text/css" href="style.less"/> 
+    <link rel="stylesheet" type="text/css" href="bower_components/codemirror/lib/codemirror.css"/>
+    <link rel="stylesheet" type="text/css" href="bower_components/codemirror/theme/ambiance.css"/>
+  </head>
+  <script type="text/javascript">
+    var gui = require('nw.gui');
+    var win = gui.Window.get();
+    win.maximize();
+  </script>
+  
+  <script type="text/javascript" src="bower_components/codemirror/lib/codemirror.js"></script>
+  <script type="text/javascript" src="bower_components/codemirror/mode/javascript/javascript.js"></script>
+  <script type="text/javascript" src="bower_components/angular-latest/angular.js"></script>
+  <script type="text/javascript" src="bower_components/angular-ui-codemirror/ui-codemirror.js"></script>
+  <script type="text/javascript" src="less.min.js"></script>
+  <script type="text/javascript" src="app.js"></script>
+  <body>
+  <navbar></navbar>
+  <div ng-view class="container"></div>
+  </body>
+</html>

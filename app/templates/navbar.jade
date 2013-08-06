@@ -1,0 +1,13 @@
+.navbar-fixed-top
+  .navbar.navbar-inverse
+    a.navbar-brand(href="#/home")
+      img(src="images/magento-logo.svg", height="22px", title="Magento Desktop")
+    ul.nav.navbar-nav
+      li
+        a(href="#/about") About
+      li
+        a(href="#/products") Products
+  div.alert(ng-repeat="alert in alerts", ng-class="alert.class")
+    button(type="button", class="close", ng-click="remove_alert($index);") &times;
+    strong {{alert.title}}
+    {{alert.message}}

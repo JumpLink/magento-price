@@ -1,0 +1,260 @@
+div.empty_productview(ng-if="!product_info.name")
+	img(src="images/product-empty-arrow-left.svg")
+	| Please choose your product!
+form(name="productForm", ng-if="product_info.name")
+	fieldset
+		h1(ng-if="whitelist.name", class="name")
+			| {{product_info.name}}
+			small(ng-if="product_info.sku")
+				| {{product_info.sku}}
+		.row
+			.col-lg-2(ng-if="whitelist.status")
+				.panel(ng-switch="product_info.status")
+					.panel-heading
+						| Status
+					span(ng-switch-when="1")
+						i.icon-circle.green
+					span(ng-switch-when="2")
+						i.icon-circle.red
+			.col-lg-2(ng-if="whitelist.price")
+				.panel
+					.panel-heading
+						| Price
+					{{product_info.price}} €
+			.col-lg-2(ng-if="whitelist.type")
+				.panel
+					.panel-heading
+						| Type
+					{{product_info.type}}
+			.col-lg-2(ng-if="whitelist.weight")
+				.panel
+					.panel-heading
+						| Weight
+					{{product_info.weight}} Kilo
+		.panel(ng-if="whitelist.price", ng-if="whitelist.group_price")
+			.panel-heading
+				| Group price
+			.form-group(ng-repeat="group in product_info.group_price")
+				.row
+					.col-lg-2
+						.input-group
+							span.input-group-addon(title="Euro")
+								i.icon-eur
+							input.form-control(type="number", min="0", step="any", ng-model="group.price", ng-change="group_price_normal_changed(group.price, $index)")
+					.col-lg-2	
+							.input-group
+								span.input-group-addon(title="Percent")
+									%
+								input.form-control(type="number", min="0", step="any", ng-model="group.price_percent", ng-change="group_price_price_percent_changed(group.price_percent, $index)")
+					.col-lg-2
+						.input-group
+							span.input-group-addon(title="Website")
+								i.icon-file
+							input.form-control(type="text", min="0", step="any", ng-model="group.website_id")
+					.col-lg-2
+						.input-group
+							span.input-group-addon(title="Customer group")
+								i.icon-group
+							input.form-control(type="number", min="0", step="any", ng-model="group.cust_group")
+					.col-lg-1		
+						button.btn(type='button', title="remove group price", ng-click="remove_groupprice($index)")
+							i.icon-minus
+				.divider
+			button.btn(type='button', title="add group price", ng-click="add_groupprice()")
+				i.icon-plus
+		.panel(ng-if="whitelist.price", ng-if="whitelist.tier_price")
+			.panel-heading
+				| Tier price
+			.form-group(ng-repeat="tier in product_info.tier_price")
+				.row
+					.col-lg-2
+						.input-group
+							span.input-group-addon(title="Quantity")
+								#
+							input.form-control(type="number", min="1", ng-model="tier.qty")
+					.col-lg-2
+						.input-group
+							span.input-group-addon(title="Euro")
+								i.icon-eur
+							input.form-control(type="number", min="0", step="any", ng-model="tier.price", ng-change="tier_price_normal_changed(tier.price, $index)")
+					.col-lg-2
+							.input-group
+								span.input-group-addon(title="Percent")
+									%
+								input.form-control(type="number", min="0", step="any", ng-model="tier.price_percent", ng-change="tier_price_price_percent_changed(tier.price_percent, $index)")
+					.col-lg-2
+						.input-group
+							span.input-group-addon(title="Website")
+								i.icon-file
+							input.form-control(type="text", min="0", step="any", ng-model="tier.website")
+					.col-lg-2
+						.input-group
+							span.input-group-addon(title="Customer group")
+								i.icon-group
+							input.form-control(type="number", min="0", step="any", ng-model="tier.customer_group_id")
+					.col-lg-1		
+						button.btn(type='button', title="remove tier price", ng-click="remove_tierprice($index)")
+							i.icon-minus
+				.divider
+			button.btn(type='button', title="add tier price", ng-click="add_tierprice()")
+				i.icon-plus
+		.panel(ng-if="whitelist.stock")
+			.panel-heading
+				| Stock 
+				i.icon-truck
+			.form-group
+				legend Strichweg
+				.row
+					.col-lg-4
+						.input-group
+							span.input-group-addon(title="Strichweg Quantity")
+								#
+							input.form-control#stock_strichweg_qty(required, type="number", min="0", ng-model="product_info.stock_strichweg_qty")
+					.col-lg-4
+						.input-group
+							span.input-group-addon(title="Strichweg Range")
+								i.icon-columns
+							input.form-control#stock_strichweg_range(required, type="text", ng-model="product_info.stock_strichweg_range")
+					.col-lg-4
+						.input-group
+							span.input-group-addon(title="Strichweg Row")
+								i.icon-list-ol
+							input.form-control#stock_strichweg_row(required, type="text", ng-model="product_info.stock_strichweg_row")
+				legend Heritage
+				.row
+					.col-lg-4
+						.input-group
+							span.input-group-addon(title="Heritage Quantity")
+								#
+							input.form-control#stock_vwheritage_qty(required, type="number", min="0", ng-model="product_info.stock_vwheritage_qty")
+		.panel(ng-if="whitelist.description")
+			.panel-heading
+				| Description
+			span(ng-bind-html-unsafe="product_info.description")
+		.panel(ng-if="whitelist.short_description")
+			.panel-heading
+				| Short description
+			span(ng-bind-html-unsafe="product_info.short_description")
+		.panel.code(ng-if="whitelist.json")
+			.panel-heading
+				i.icon-code
+			textarea(ui-codemirror="{mode: {name: 'javascript', json: true}, lineWrapping: true, lineNumbers: true, theme:'ambiance', onChange: reParseJson}", ng-model="product_info_json")
+			//- dl
+			//- 	dt(ng-if="product_info.applications") applications
+			//- 	dd(ng-if="product_info.applications") {{product_info.applications}}
+			//- 	dt(ng-if="product_info.categories") categories
+			//- 	dd(ng-if="product_info.categories") {{product_info.categories}}
+			//- 	dt(ng-if="product_info.category_ids") category_ids
+			//- 	dd(ng-if="product_info.category_ids") {{product_info.category_ids}}
+			//- 	dt(ng-if="product_info.cost_price") cost_price
+			//- 	dd(ng-if="product_info.cost_price") {{product_info.cost_price}}
+			//- 	dt(ng-if="product_info.country_of_manufacture") country_of_manufacture
+			//- 	dd(ng-if="product_info.country_of_manufacture") {{product_info.country_of_manufacture}}
+			//- 	dt(ng-if="product_info.created_at") created_at
+			//- 	dd(ng-if="product_info.created_at") {{product_info.created_at}}
+			//- 	dt(ng-if="product_info.custom_design") custom_design
+			//- 	dd(ng-if="product_info.custom_design") {{product_info.custom_design}}
+			//- 	dt custom_design_from
+			//- 	dd {{product_info.custom_design_from}}
+			//- 	dt custom_design_to
+			//- 	dd {{product_info.custom_design_to}}
+			//- 	dt custom_layout_update
+			//- 	dd {{product_info.custom_layout_update}}
+			//- 	dt delivery_time
+			//- 	dd {{product_info.delivery_time}}
+			//- 	dt enable_googlecheckout
+			//- 	dd {{product_info.enable_googlecheckout}}
+			//- 	dt fittinginfo
+			//- 	dd {{product_info.fittinginfo}}
+			//- 	dt gift_message_available
+			//- 	dd {{product_info.gift_message_available}}
+			//- 	dt group_price
+			//- 	dd {{product_info.group_price}}
+			//- 	dt has_options
+			//- 	dd {{product_info.has_options}}
+			//- 	dt image_label
+			//- 	dd {{product_info.image_label}}
+			//- 	dt is_recurring
+			//- 	dd {{product_info.is_recurring}}
+			//- 	dt manufacturer
+			//- 	dd {{product_info.manufacturer}}
+			//- 	dt meta_description
+			//- 	dd {{product_info.meta_description}}
+			//- 	dt meta_keyword
+			//- 	dd {{product_info.meta_keyword}}
+			//- 	dt meta_title
+			//- 	dd {{product_info.meta_title}}
+			//- 	dt metrics
+			//- 	dd {{product_info.metrics}}
+			//- 	dt minimal_price
+			//- 	dd {{product_info.minimal_price}}
+			//- 	dt msrp
+			//- 	dd {{product_info.msrp}}
+			//- 	dt msrp_display_actual_price_type
+			//- 	dd {{product_info.msrp_display_actual_price_type}}
+			//- 	dt msrp_enabled
+			//- 	dd {{product_info.msrp_enabled}}
+			//- 	dt news_from_date
+			//- 	dd {{product_info.news_from_date}}
+			//- 	dt news_to_date
+			//- 	dd {{product_info.news_to_date}}
+			//- 	dt old_id
+			//- 	dd {{product_info.old_id}}
+			//- 	dt options_container
+			//- 	dd {{product_info.options_container}}
+			//- 	dt package_id
+			//- 	dd {{product_info.package_id}}
+			//- 	dt quality
+			//- 	dd {{product_info.quality}}
+			//- 	dt recommend_price
+			//- 	dd {{product_info.recommend_price}}
+			//- 	dt recommend_price_netto
+			//- 	dd {{product_info.recommend_price_netto}}
+			//- 	dt recurring_profile
+			//- 	dd {{product_info.recurring_profile}}
+			//- 	dt required_options
+			//- 	dd {{product_info.required_options}}
+			//- 	dt set
+			//- 	dd {{product_info.set}}
+			//- 	dt small_image_label
+			//- 	dd {{product_info.small_image_label}}
+			//- 	dt special_from_date
+			//- 	dd {{product_info.special_from_date}}
+			//- 	dt special_order
+			//- 	dd {{product_info.special_order}}
+			//- 	dt special_price
+			//- 	dd {{product_info.special_price}}
+			//- 	dt special_to_date
+			//- 	dd {{product_info.special_to_date}}
+			//- 	dt stock_vwheritage_dueweeks
+			//- 	dd {{product_info.stock_vwheritage_dueweeks}}
+			//- 	dt stock_vwheritage_messagecode
+			//- 	dd {{product_info.stock_vwheritage_messagecode}}
+			//- 	dt stock_vwheritage_qty
+			//- 	dd {{product_info.stock_vwheritage_qty}}
+			//- 	dt superstageshow
+			//- 	dd {{product_info.superstageshow}}
+			//- 	dt supplier_internal
+			//- 	dd {{product_info.supplier_internal}}
+			//- 	dt tax_class_id
+			//- 	dd {{product_info.tax_class_id}}
+			//- 	dt thumbnail_label
+			//- 	dd {{product_info.thumbnail_label}}
+			//- 	dt tier_price
+			//- 	dd {{product_info.tier_price}}
+			//- 	dt type
+			//- 	dd {{product_info.type}}
+			//- 	dt type_id
+			//- 	dd {{product_info.type_id}}
+			//- 	dt updated_at
+			//- 	dd {{product_info.updated_at}}
+			//- 	dt url_key
+			//- 	dd {{product_info.url_key}}
+			//- 	dt url_path
+			//- 	dd {{product_info.url_path}}
+			//- 	dt visibility
+			//- 	dd {{product_info.visibility}}
+			//- 	dt vwheritage_price_pound
+			//- 	dd {{product_info.vwheritage_price_pound}}
+			//- 	dt websites
+			//- 	dd {{product_info.websites}}

@@ -13,6 +13,7 @@ results
 core
 
 node_modules/*
+app/bower_components
 
 npm-debug.log
 config.json

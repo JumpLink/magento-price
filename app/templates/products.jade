@@ -1,0 +1,12 @@
+.row
+	.col-lg-3
+		productsbar(storeview="shop_de")
+	.col-lg-9
+		productview(storeview="shop_de")
+.navbar.navbar-fixed-bottom
+	ul.nav.navbar-nav.pull-right
+		li
+			button.btn.btn-default.navbar-btn(type="button", ng-click="save()")
+				// ng-disabled="productForm.$invalid"
+				i.icon-save
+				|  Save
