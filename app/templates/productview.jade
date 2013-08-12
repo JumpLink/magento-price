@@ -138,7 +138,7 @@ form(name="productForm", ng-if="product_info.name")
 		.panel.code(ng-if="whitelist.json")
 			.panel-heading
 				i.icon-code
-			textarea(ui-codemirror="{mode: {name: 'javascript', json: true}, lineWrapping: true, lineNumbers: true, theme:'ambiance', onChange: reParseJson}", ng-model="product_info_json")
+			textarea(ui-codemirror="{mode: {name: 'javascript', json: true}, lineWrapping: true, lineNumbers: true, theme:'ambiance', onChange: reParseJson()}", ui-refresh="product_info", ng-model="product_info_json")
 			//- dl
 			//- 	dt(ng-if="product_info.applications") applications
 			//- 	dd(ng-if="product_info.applications") {{product_info.applications}}

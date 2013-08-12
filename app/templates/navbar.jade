@@ -1,12 +1,35 @@
 .navbar-fixed-top
   .navbar.navbar-inverse
+    button.navbar-toggle(type="button", ng-click="nav_collapse = !nav_collapse")
+      i.icon-align-justify
     a.navbar-brand(href="#/home")
       img(src="images/magento-logo.svg", height="22px", title="Magento Desktop")
-    ul.nav.navbar-nav
-      li
-        a(href="#/about") About
-      li
-        a(href="#/products") Products
+    .nav-collapse.navbar-responsive-collapse(ng-class="{false: 'collapse', true: 'in'}[nav_collapse]")
+      ul.nav.navbar-nav
+        li
+          a(href="#/about") About
+        //- TODO make directives of this dropdowns
+        li.dropdown(ng-class="{true: 'open'}[dropdown.products]")
+          a.dropdown-toggle(ng-click="dropdown.products = !dropdown.products")
+            | Products
+            b.caret
+          ul.dropdown-menu
+            li
+              a(href="#/products", ng-click="dropdown.products = !dropdown.products") Fast Edit
+        li.dropdown(ng-class="{true: 'open'}[dropdown.sales]")
+          a.dropdown-toggle(ng-click="dropdown.sales = !dropdown.sales") Sales
+            b.caret
+          ul.dropdown-menu
+            li
+              a(href="#", ng-click="dropdown.sales = !dropdown.sales") Order
+            li
+              a(href="#/sale/creditmemo", ng-click="dropdown.sales = !dropdown.sales") Credit Memo
+            li
+              a(href="#", ng-click="dropdown.sales = !dropdown.sales") Invoice
+            li
+              a(href="#", ng-click="dropdown.sales = !dropdown.sales") Shipment
+        li
+          a(href="#/log") Log
   div.alert(ng-repeat="alert in alerts", ng-class="alert.class")
     button(type="button", class="close", ng-click="remove_alert($index);") &times;
     strong {{alert.title}}

@@ -1,0 +1,21 @@
+h1 Sale Order Credit Memo
+table.table.table-striped
+  thead
+    tr
+      th Increment ID
+      th Updated at
+      th Subtotal incl. tax
+      th Tax amount
+      th Action
+  tbody
+    tr(ng-repeat="sales_order_creditmemo in sales_order_creditmemos")
+      td {{sales_order_creditmemo.increment_id}}
+      td {{sales_order_creditmemo.updated_at}}
+      td {{sales_order_creditmemo.subtotal_incl_tax}}
+      td {{sales_order_creditmemo.tax_amount}}
+      td
+        .btn-group
+          button.btn.btn-default(title="Cancel", ng-click="cancel_creditmemo(sales_order_creditmemo.increment_id)")
+            i.icon-remove
+          button.btn.btn-default(title="Delete", ng-click="delete_creditmemo(sales_order_creditmemo.increment_id)")
+            i.icon-trash
