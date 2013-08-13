@@ -169,7 +169,7 @@ app.factory("MagentoService", function(ExecService, AsyncService) {
 
   magento.xmlrpc.helper = {
     get_all_products_from_storeview: function (storeView, cb) {
-      var filter = magento.xmlrpc.auto.set_filter.like_sku ("151");
+      var filter = magento.xmlrpc.auto.set_filter.like_sku ("");
       magento.xmlrpc.auto.catalog.product.list(filter, storeView, cb);
     }
   }

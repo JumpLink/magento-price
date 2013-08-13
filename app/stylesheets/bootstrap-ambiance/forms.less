@@ -1,0 +1,18 @@
+/* Input Glow in Ambiance Color*/
+.form-control {
+  &:focus {
+    border-color: rgba(240, 119, 70, .8); //@ambiance-organge with 0.8 alpha
+    .box-shadow(~"inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(240, 119, 70, .6)");
+  }
+}
+
+/* Fix long Numbers */
+input[type="number"] {
+  text-align: left;
+  padding-right: 0;
+}
+
+/* Show default cursor on Inputicon */
+.input-group-addon {
+  cursor: default;
+}

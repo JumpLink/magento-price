@@ -1,0 +1,81 @@
+/**
+ * Please modify this file to customize your bootstrap-ambiance theme 
+ */
+
+@bootstrap_less_path: "../../bower_components/bootstrap/less";
+@bootstrap_ambiance_path: ".";
+@ubuntu_font_path: "@{bootstrap_ambiance_path}/ubuntu-font";
+@font_awesome_less_path: "../../bower_components/font-awesome/less";
+
+@import "@{ubuntu_font_path}/ubuntu-font.less";
+/*############ bootstrap ############*/
+
+// Core variables and mixins
+@import "@{bootstrap_less_path}/variables.less";
+@import "@{bootstrap_ambiance_path}/variables.less";
+@import "@{bootstrap_less_path}/mixins.less";
+
+// Reset
+@import "@{bootstrap_less_path}/normalize.less";
+@import "@{bootstrap_less_path}/print.less";
+
+// Core CSS
+@import "@{bootstrap_less_path}/scaffolding.less";
+@import "@{bootstrap_less_path}/type.less";
+@import "@{bootstrap_less_path}/code.less";
+@import "@{bootstrap_less_path}/grid.less";
+
+@import "@{bootstrap_less_path}/tables.less";
+@import "@{bootstrap_less_path}/forms.less";
+@import "@{bootstrap_ambiance_path}/forms.less";
+@import "@{bootstrap_less_path}/buttons.less";
+
+// Components: common
+@import "@{bootstrap_less_path}/component-animations.less";
+@import "@{bootstrap_less_path}/dropdowns.less";
+@import "@{bootstrap_ambiance_path}/dropdowns.less";
+@import "@{bootstrap_less_path}/list-group.less";
+@import "@{bootstrap_less_path}/panels.less";
+@import "@{bootstrap_less_path}/wells.less";
+@import "@{bootstrap_less_path}/close.less";
+
+// Components: Nav
+@import "@{bootstrap_less_path}/navs.less";
+@import "@{bootstrap_less_path}/navbar.less";
+@import "@{bootstrap_ambiance_path}/navbar.less";
+@import "@{bootstrap_less_path}/button-groups.less";
+@import "@{bootstrap_less_path}/breadcrumbs.less";
+@import "@{bootstrap_less_path}/pagination.less";
+@import "@{bootstrap_less_path}/pager.less";
+
+// Components: Popovers
+@import "@{bootstrap_less_path}/modals.less";
+@import "@{bootstrap_less_path}/tooltip.less";
+@import "@{bootstrap_less_path}/popovers.less";
+
+// Components: Misc
+@import "@{bootstrap_less_path}/alerts.less";
+@import "@{bootstrap_less_path}/thumbnails.less";
+@import "@{bootstrap_less_path}/media.less";
+@import "@{bootstrap_less_path}/labels.less";
+@import "@{bootstrap_less_path}/badges.less";
+@import "@{bootstrap_less_path}/progress-bars.less";
+@import "@{bootstrap_less_path}/accordion.less";
+@import "@{bootstrap_less_path}/carousel.less";
+@import "@{bootstrap_less_path}/jumbotron.less";
+
+// Utility classes
+@import "@{bootstrap_less_path}/utilities.less"; // Has to be last to override when necessary
+@import "@{bootstrap_ambiance_path}/utilities.less";
+@import "@{bootstrap_less_path}/responsive-utilities.less";
+
+
+/*############ FontAwesome ############*/
+@import "@{font_awesome_less_path}/variables.less";
+@FontAwesomePath: "../bower_components/font-awesome/font";
+@import "@{font_awesome_less_path}/mixins.less";
+@import "@{font_awesome_less_path}/path.less";
+@import "@{font_awesome_less_path}/core.less";
+@import "@{font_awesome_less_path}/bootstrap.less";
+@import "@{font_awesome_less_path}/extras.less";
+@import "@{font_awesome_less_path}/icons.less";

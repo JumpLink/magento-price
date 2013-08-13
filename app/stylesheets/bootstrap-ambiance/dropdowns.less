@@ -1,0 +1,35 @@
+.dropdown-menu {
+  background-color: #41403b;
+  background-image: none;
+  border-color: #3a3935;
+  border-style: solid;
+  border-width: 1px;
+  box-shadow: 0 1px #474640 inset, 0 -1px #474640 inset, -1px 0 #46453f inset, 1px 0 #474640 inset;
+  color: #f1efeb;
+  > li {
+    > a {
+        color: #f1efeb;
+        border-color: transparent;
+        border-style: solid;
+        border-width: 1px;
+      &:focus, &:hover {
+        background-image: -moz-linear-gradient( to bottom, #f68253 0%, #e96d3a 100%);
+        background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f68253), color-stop(100%,#e96d3a));
+        background-image: -webkit-linear-gradient( top, #f68253 0%, #e96d3a 100%);
+        background-image: -o-linear-gradient( top, #f68253 0%, #e96d3a 100%);
+        background-image: -ms-linear-gradient( top, #f68253 0%, #e96d3a 100%);
+        background-image: linear-gradient( top, #f68253 0%, #e96d3a 100%);
+        filter: progid:DXImageTransform.Microsoft.gradient(  startColorstr='#f68253', endColorstr='#e96d3a', GradientType=0);
+        border-color: #ad512c;
+        border-style: solid;
+        border-width: 1px;
+        color: #ffffff;
+      }
+    }
+  }
+}
+
+// show pointer over dropdown without link 
+.dropdown {
+  cursor: pointer;
+}

@@ -1,121 +1,15 @@
-@import "ubuntu-font/ubuntu-font.less";
-/*############ bootstrap ############*/
-
-// Core variables and mixins
-@import "../bower_components/bootstrap/less/variables.less";
-@import "../bower_components/bootstrap/less/mixins.less";
-
-// Customvariables and mixins
-@font-family-sans-serif:  "Ubuntu", "Helvetica Neue", Helvetica, Arial, sans-serif;
-
-// Reset
-@import "../bower_components/bootstrap/less/normalize.less";
-@import "../bower_components/bootstrap/less/print.less";
-
-// Core CSS
-@import "../bower_components/bootstrap/less/scaffolding.less";
-@import "../bower_components/bootstrap/less/type.less";
-@import "../bower_components/bootstrap/less/code.less";
-@import "../bower_components/bootstrap/less/grid.less";
-
-@import "../bower_components/bootstrap/less/tables.less";
-@import "../bower_components/bootstrap/less/forms.less";
-@import "../bower_components/bootstrap/less/buttons.less";
-
-// Components: common
-@import "../bower_components/bootstrap/less/component-animations.less";
-@import "../bower_components/bootstrap/less/dropdowns.less";
-@import "../bower_components/bootstrap/less/list-group.less";
-@import "../bower_components/bootstrap/less/panels.less";
-@import "../bower_components/bootstrap/less/wells.less";
-@import "../bower_components/bootstrap/less/close.less";
-
-// Components: Nav
-@import "../bower_components/bootstrap/less/navs.less";
-@import "../bower_components/bootstrap/less/navbar.less";
-@import "../bower_components/bootstrap/less/button-groups.less";
-@import "../bower_components/bootstrap/less/breadcrumbs.less";
-@import "../bower_components/bootstrap/less/pagination.less";
-@import "../bower_components/bootstrap/less/pager.less";
-
-// Components: Popovers
-@import "../bower_components/bootstrap/less/modals.less";
-@import "../bower_components/bootstrap/less/tooltip.less";
-@import "../bower_components/bootstrap/less/popovers.less";
-
-// Components: Misc
-@import "../bower_components/bootstrap/less/alerts.less";
-@import "../bower_components/bootstrap/less/thumbnails.less";
-@import "../bower_components/bootstrap/less/media.less";
-@import "../bower_components/bootstrap/less/labels.less";
-@import "../bower_components/bootstrap/less/badges.less";
-@import "../bower_components/bootstrap/less/progress-bars.less";
-@import "../bower_components/bootstrap/less/accordion.less";
-@import "../bower_components/bootstrap/less/carousel.less";
-@import "../bower_components/bootstrap/less/jumbotron.less";
-
-// Utility classes
-@import "../bower_components/bootstrap/less/utilities.less"; // Has to be last to override when necessary
-@import "../bower_components/bootstrap/less/responsive-utilities.less";
-
-
-/*############ FontAwesome ############*/
-@FontAwesomeLessPath: "../bower_components/font-awesome/less";
-@import "../bower_components/font-awesome/less/variables.less";
-@FontAwesomePath: "../bower_components/font-awesome/font";
-@import "../bower_components/font-awesome/less/mixins.less";
-@import "../bower_components/font-awesome/less/path.less";
-@import "../bower_components/font-awesome/less/core.less";
-@import "../bower_components/font-awesome/less/bootstrap.less";
-@import "../bower_components/font-awesome/less/extras.less";
-@import "../bower_components/font-awesome/less/icons.less";
-
-@import "bootstrap-ambiance/navbar.less";
-
-@green: @brand-success;
-@red: @brand-danger;
-@orange: #f07746;
+@import "bootstrap-ambiance/main.less";
 
 body {
 	padding-top: 60px;
 	padding-bottom: 60px;
 }
+
+// No break, cut text in nav-stacked for better look
 .nav-stacked li a {
-	 text-overflow: ellipsis;
-	 white-space: nowrap;
-	 overflow: hidden;
-}
-
-.green {
-	color: @green;
-}
-.red {
-	color: @red;
-}
-
-.panel {
-	.divider {
-		border-top: 1px solid @panel-border;
-		height: 1px;
-		margin: 9px 0;
-		overflow: hidden;
-	}
-}
-
-*::-webkit-scrollbar-track
-{
-	background: transparent;
-}
-
-*::-webkit-scrollbar
-{
-	width: 3px;
-	background: transparent;
-}
-
-*::-webkit-scrollbar-thumb
-{
-	background-color: @orange;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
 }
 
 .form-inline {
@@ -129,17 +23,6 @@ body {
 	.CodeMirror  {
 		margin: -15px;
 	}
-}
-input[type="number"] {
-	text-align: left;
-	padding-right: 0;
-}
-.input-group-addon {
-	cursor: default;
-}
-
-.dropdown {
-	cursor: pointer;
 }
 
 .navbar-fixed-top {
