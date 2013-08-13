@@ -7,3 +7,6 @@
 [submodule "data/font-awesome"]
 	path = data/font-awesome
 	url = git@github.com:FortAwesome/Font-Awesome.git
+[submodule "app/stylesheets/bootstrap-ambiance"]
+	path = app/stylesheets/bootstrap-ambiance
+	url = git@github.com:JumpLink/bootstrap-ambiance.git
