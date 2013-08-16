@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Magento Desktop</title>
+  </head>
+  <body style="margin: 0; width: 500px; height:200px; overflow:hidden; position: fixed;">
+    <embed src="images/splashscreen.svg" type="image/svg+xml" />
+  <script>
+    var gui = require('nw.gui');
+    var splash = gui.Window.get();
+    var util = require('util');
+
+    var save_image = function (img) {
+      var base64Data = img.replace(/^data:image\/(png|jpg|jpeg);base64,/, "");
+      require("fs").writeFile("out.png", base64Data, 'base64', function(err) {
+        console.log(err);
+      });
+    }
+
+    onload = function() {
+      splash.show(); // show splash after page is ready
+      var index = gui.Window.open('index.html', {
+        title: "Magento Desktop",
+        icon: "app/images/magento-logo.png",
+        fullscreen: false,
+        toolbar: false,
+        frame: true,
+        show: false,
+        position: 'center',
+        width: 800,
+        height: 600
+      });
+      // Test Comunication between splashscreen and index
+      var EventEmitter = require('events').EventEmitter;
+      index.custom_events = new EventEmitter();
+      index.custom_events.on('test', function() {
+        console.log("\n\nworks on splash\n\n");
+      });
+      // show index and close splash after index is ready
+      index.on('loaded', function() {
+        index.show();
+        splash.close();
+        index.capturePage(function(img) {
+          save_image(img);
+        }, 'png');
+      });
+    }
+  </script>
+  </body>
+</html>

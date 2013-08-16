@@ -9,9 +9,13 @@
     <link rel="stylesheet" type="text/css" href="bower_components/codemirror/theme/ambiance.css"/>
   </head>
   <script type="text/javascript">
+    // Test Comunication between splashscreen and index
     var gui = require('nw.gui');
     var win = gui.Window.get();
-    win.maximize();
+    win.custom_events.on('test', function() {
+      console.log("\n\nworks on index\n\n");
+    });
+    win.custom_events.emit("test");
   </script>
   
   <script type="text/javascript" src="bower_components/codemirror/lib/codemirror.js"></script>

@@ -1,5 +1,5 @@
 {
-  "main": "app/index.html",
+  "main": "app/splashscreen.html",
   "name": "Magento Desktop",
   "description": "Manage your Magento Shop",
   "version": "0.0.1",
@@ -15,8 +15,13 @@
     "title": "Magento Desktop",
     "icon": "app/images/magento-logo.png",
     "fullscreen": false,
-    "toolbar": true,
-    "frame": true
+    "toolbar": false,
+    "frame": false,
+    "width": 500,
+    "height": 200,
+    "position": "center",
+    "always-on-top": true,
+    "show": false
   },
   "webkit": {
     "plugin": true
