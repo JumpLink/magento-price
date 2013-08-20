@@ -21,13 +21,13 @@
             b.caret
           ul.dropdown-menu
             li
-              a(href="#", ng-click="dropdown.sales = !dropdown.sales") Order
+              a(href="#/sale/order", ng-click="dropdown.sales = !dropdown.sales") Order
             li
               a(href="#/sale/creditmemo", ng-click="dropdown.sales = !dropdown.sales") Credit Memo
             li
-              a(href="#", ng-click="dropdown.sales = !dropdown.sales") Invoice
+              a(href="#/sale/invoice", ng-click="dropdown.sales = !dropdown.sales") Invoice
             li
-              a(href="#", ng-click="dropdown.sales = !dropdown.sales") Shipment
+              a(href="#/sale/shipment", ng-click="dropdown.sales = !dropdown.sales") Shipment
         li
           a(href="#/log") Log
   div.alert(ng-repeat="alert in alerts", ng-class="alert.class")

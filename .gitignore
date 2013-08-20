@@ -14,6 +14,8 @@ core
 
 node_modules/*
 app/bower_components
+app/templates/*.html
+app/stylesheets/*.css
 
 npm-debug.log
 config.json

@@ -46,14 +46,18 @@ function CreditmemoController($scope, MagentoService, NotifyService) {
   }
 }
 
-function ProductController($scope, MagentoService, ProductService, PriceService, NotifyService) {
+function ProductController($scope, DatabaseService, PriceService, NotifyService) {
 
-  $scope.whitelist = ProductService.whitelist;
+  $scope.magento = DatabaseService.products.magento;
+
+  $scope.whitelist = DatabaseService.products.whitelist;
+  console.log("whitelist");
+  console.log($scope.whitelist);
 
   $scope.product_info = {};
 
   // FIXME
-  if (ProductService.whitelist.json) {
+  if ($scope.whitelist.json) {
     $scope.product_info_json = "";
     // applays the change on product_info to product_info_json
     $scope.$watch('product_info', function (newVal) {
@@ -65,16 +69,16 @@ function ProductController($scope, MagentoService, ProductService, PriceService,
     // applays the change on product_info_json (codemirror) to product_info 
     $scope.$watch('product_info_json', function (newVal) {
       console.log("json changed!");
-      $scope.product_info = ProductService.normalise_product_info(JSON.parse(newVal));
+      $scope.product_info = JSON.parse(newVal);
     }, true);
 
     $scope.reParseJson = function() {
       console.log("reParseJson");
-      $scope.product_info = ProductService.normalise_product_info(JSON.parse($scope.product_info_json));
+      $scope.product_info =JSON.parse($scope.product_info_json);
     }
   }
 
-  if (ProductService.whitelist.tier_price) {
+  if ($scope.whitelist.tier_price) {
     $scope.tier_price_price_percent_changed = function (price_percent, i) {
       console.log('percent changed: '+price_percent+' index: '+i);
       $scope.product_info.tier_price[i].price = PriceService.get_price (price_percent, $scope.product_info.price)
@@ -102,7 +106,7 @@ function ProductController($scope, MagentoService, ProductService, PriceService,
     }
   }
 
-  if (ProductService.whitelist.group_price) {
+  if ($scope.whitelist.group_price) {
     $scope.group_price_price_percent_changed = function (price_percent, i) {
       console.log('percent changed: '+price_percent+' index: '+i);
       $scope.product_info.group_price[i].price = PriceService.get_price (price_percent, $scope.product_info.price)
@@ -128,67 +132,5 @@ function ProductController($scope, MagentoService, ProductService, PriceService,
     $scope.remove_groupprice = function (index) {
       $scope.product_info.group_price.splice(index, 1);
     }
-  }
-
-  $scope.save = function() {
-    var storeView = "shop_de"; //TODO
-
-    var total_qty = $scope.product_info.stock_strichweg_qty + $scope.product_info.stock_vwheritage_qty;
-    var is_in_stock = (total_qty > 0) ? 1 : 0;
-
-    $scope.product_info.stock_data = {
-      qty: total_qty,
-      use_config_manage_stock: 1,
-      is_in_stock: is_in_stock
-    };
-
-    MagentoService.xmlrpc.manual.init(function(err) {
-      if (ProductService.whitelist.group_price) {
-        MagentoService.xmlrpc.manual.jumplink_product_attribute_groupprice.update($scope.product_info.product_id, $scope.product_info.group_price, function (error, result) {
-          
-          if (error || result !== true) {
-            // AlertService.push("Error: ", "Could not save Group Price: "+error, 'danger');
-            NotifyService.notify("Error: Could not save Group Price: "+error, { title: 'Magento' });
-          } else {
-            // AlertService.push("Success: ", "Group Price saved: "+result, 'success');
-            NotifyService.notify("Success: Group Price saved", { title: 'Magento' });
-          }
-          
-        });
-      }
-      if (ProductService.whitelist.tier_price) {
-        MagentoService.xmlrpc.auto.catalog.product.attribute.tier_price.update ($scope.product_info.product_id, {tier_price:$scope.product_info.tier_price}, function (error, result, sku) {
-          if (error || result !== true) {
-            // AlertService.push("Error: ", "Could not save Tier Price: "+error, 'danger');
-            NotifyService.notify("Error: Could not save Tier Price: "+error, { title: 'Magento' });
-          } else {
-            // AlertService.push("Success: ", "Tier Price saved: "+result, 'success');
-            NotifyService.notify("Success: Tier Price saved", { title: 'Magento' });
-          }
-          var tier_price = $scope.product_info.tier_price;
-          delete $scope.product_info.tier_price;
-          MagentoService.xmlrpc.auto.catalog.product.update ($scope.product_info.product_id, $scope.product_info, storeView, function (error, result, sku) {
-            if (error || result !== true) {
-              // AlertService.push("Error: ", "Error: Could not save Product: "+error, 'danger');
-              NotifyService.notify("Error: Could not save Product: "+error, { title: 'Magento' });
-            } else {
-              // AlertService.push("Success: ", "Product saved: "+result, 'success');
-              NotifyService.notify("Success: Product saved", { title: 'Magento' });
-            }
-            $scope.product_info.tier_price = tier_price;
-          });
-        });
-      } else {
-        MagentoService.xmlrpc.auto.catalog.product.update ($scope.product_info.product_id, $scope.product_info, storeView, function (error, result, sku) {
-          if (error || result !== true) {
-            // AlertService.push("Error: ", "Error: Could not save Product: "+error, 'danger');
-            NotifyService.notify("Error: Could not save Product: "+error, { title: 'Magento' });
-          } else {
-            // AlertService.push("Success: ", "Product saved: "+result, 'success');
-            NotifyService.notify("Success: Product saved", { title: 'Magento' });
-          }
-        });
-      }
-    });
   }
 }

@@ -1,17 +1,16 @@
-app.directive("productview", ['MagentoService', 'JadeService', 'ProductService', function (MagentoService, JadeService, ProductService) {
+app.directive("productview", ['DatabaseService', function (DatabaseService) {
   return {
     restrict: "E",
-    template: JadeService('/templates/productview.jade'),
+    templateUrl: __dirname+'/templates/productview.html',
     link: function ($scope, $element, $attrs) {
 
       $scope.load_product = function (id, storeview) {
-        MagentoService.xmlrpc.auto.catalog.product.info(id, storeview, function (error, result) {
-          if (error) console.log(error);
-          else {
-            $scope.product_info = ProductService.normalise_product_info (result);
-            //$scope.product_info_json = JSON.stringify($scope.product_info, null, "  ");
-            $scope.$apply();
-          }
+        DatabaseService.products.local.updateOne (id, function (error, result) {
+          if (error) console.log( "error with product_id is "+id+" " + require('util').inspect(error, showHidden=false, depth=2, colorize=true) );
+          console.log( "error with product_id is "+id+" " + require('util').inspect(result, showHidden=false, depth=2, colorize=true) );
+          console.log("product loaded");
+          $scope.product_info = result;
+          $scope.$apply();
         });
       }
       if( $attrs.productid && $attrs.storeview)
@@ -20,13 +19,14 @@ app.directive("productview", ['MagentoService', 'JadeService', 'ProductService',
   }
 }]);
 
-app.directive("productsbar", ['JadeService', function (JadeService) {
+app.directive("productsbar", [function () {
   return {
     restrict: "E",
-    template: JadeService('/templates/productsbar.jade'),
-    controller: function ($scope, $element, $attrs, MagentoService) {
+    templateUrl: __dirname+'/templates/productsbar.html',
+    controller: function ($scope, $element, $attrs, DatabaseService) {
       $scope.sku = "";
-      MagentoService.xmlrpc.helper.get_all_products_from_storeview ($attrs.storeview, function (error, result) {
+      DatabaseService.products.local.find ({}, function (error, result) {
+        console.log( require('util').inspect(result, showHidden=false, depth=2, colorize=true) );
         if (error) console.log(error);
         $scope.products = result;
         $scope.$apply();
@@ -35,10 +35,10 @@ app.directive("productsbar", ['JadeService', function (JadeService) {
   }
 }]);
 
-app.directive("navbar", ['JadeService', function (JadeService) {
+app.directive("navbar", [function () {
   return {
     restrict: "E",
-    template: JadeService('/templates/navbar.jade'),
+    templateUrl: __dirname+'/templates/navbar.html',
     controller: function ($scope, $element, $attrs, AlertService) {
       $scope.nav_collapse = false;
       $scope.remove_alert = function (index) {

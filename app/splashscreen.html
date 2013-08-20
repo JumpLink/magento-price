@@ -9,41 +9,79 @@
   <script>
     var gui = require('nw.gui');
     var splash = gui.Window.get();
-    var util = require('util');
-
-    var save_image = function (img) {
-      var base64Data = img.replace(/^data:image\/(png|jpg|jpeg);base64,/, "");
-      require("fs").writeFile("out.png", base64Data, 'base64', function(err) {
-        console.log(err);
-      });
-    }
-
     onload = function() {
+      var util = require('util');
+      var db = require('./database/db.js')("shop_de");
+      var render_jade = function (path) {
+        var jade = require('jade');
+        var options = {
+          pretty: false,
+          self: false,
+          debug: false,
+          compileDebug: true
+        }
+        var jade = require('jade');
+        var fs = require('fs');
+        fs.readdir(path, function (err, files) {
+          for (i in files) {
+            var splited = files[i].split(".");
+            var extension = splited[splited.length - 1];
+            if ( extension === "jade") {
+              jade.renderFile(path+"/"+files[i], options, function (err, html) {
+                if (err) throw err;
+                else
+                  fs.writeFile(path+"/"+splited[0]+".html", html, function(err) {
+                    if (err) console.log(err);
+                    else console.log("Less file was saved!");
+                  }); 
+              });
+            }
+          };
+        });
+      }
+      //render_jade ("./app/templates");
+
+      var render_less = function (paths, filename) {
+        console.log (paths+"/"+filename);
+        var less = require('less'); // https://github.com/less/less.js/pull/1253
+        var fs = require('fs');
+        var parser = new(less.Parser)({
+            paths: paths, // Specify search paths for @import directives
+            filename: filename // Specify a filename, for better error messages
+        });
+        fs.readFile(paths[0]+"/"+filename, 'utf8', function (err, data) {
+          if (err) throw err;
+          console.log ("less: "+data);
+          parser.parse(data, function (err, tree) {
+            console.log ("err: "+err);
+            console.log ("tree: "+tree);
+            var css = tree.toCSS({ compress: true }); // Minify CSS output
+            if (err) throw err;
+            fs.writeFile(paths[0]+"/style.css", css, function(err) {
+              if (err) throw err;
+              else console.log("CSS file was saved!");
+            }); 
+          });
+        });
+      }
+      //render_less (["./app/stylesheets", "./app/bower_components", "."], "main.less");
+
       splash.show(); // show splash after page is ready
       var index = gui.Window.open('index.html', {
         title: "Magento Desktop",
         icon: "app/images/magento-logo.png",
         fullscreen: false,
-        toolbar: false,
+        toolbar: true,
         frame: true,
         show: false,
         position: 'center',
         width: 800,
         height: 600
       });
-      // Test Comunication between splashscreen and index
-      var EventEmitter = require('events').EventEmitter;
-      index.custom_events = new EventEmitter();
-      index.custom_events.on('test', function() {
-        console.log("\n\nworks on splash\n\n");
-      });
       // show index and close splash after index is ready
       index.on('loaded', function() {
         index.show();
         splash.close();
-        index.capturePage(function(img) {
-          save_image(img);
-        }, 'png');
       });
     }
   </script>

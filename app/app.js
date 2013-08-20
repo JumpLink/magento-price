@@ -5,30 +5,25 @@ var util = require('util');
 
 // Dirty workaround
 var app = angular.module("app", ['ui.codemirror']);
-app.render = function (jade_file) {
-  var jade = require('jade');
-  var fs = require('fs');
-  return jade.compile(fs.readFileSync(__dirname+jade_file, 'utf8'));
-}
 
 app.config(function($routeProvider) {
 
   $routeProvider.when('/home', {
-    template: app.render('/templates/home.jade'),
+    templateUrl: __dirname+'/templates/home.html',
     controller: 'HomeController'
   });
 
   $routeProvider.when('/products', {
-    template: app.render('/templates/products.jade'),
+    templateUrl: __dirname+'/templates/products.html',
     controller: 'ProductController'
   });
 
   $routeProvider.when('/about', {
-    template: app.render('/templates/about.jade')
+    templateUrl: __dirname+'/templates/about.html'
   });
 
   $routeProvider.when('/sale/creditmemo', {
-    template: app.render('/templates/sale/creditmemo.jade'),
+    templateUrl: __dirname+'/templates/sale/creditmemo.html',
     controller: 'CreditmemoController'
   });
 

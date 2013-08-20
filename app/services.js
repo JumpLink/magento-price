@@ -1,16 +1,10 @@
-app.factory("ExecService", function() {
+/*app.factory("ExecService", function() {
   return require('child_process').exec;
 });
 
 app.factory("AsyncService", function() {
   return require('async');
-});
-
-// I should use jade with a service and without the Workaround
-app.factory("JadeService", function() {
-  return app.render;
-});
-
+});*/
 
 /**
  * Notify some stuff with bootstrap alert under the navbar
@@ -79,99 +73,11 @@ app.factory("PriceService", function() {
   }
 });
 
-app.factory("ProductService", ['PriceService', function(PriceService) {
-  var whitelist = require ('../config.json').product_view;
-  return {
-    whitelist: whitelist,
-    normalise_product_info : function (product_info) {
+app.factory("DatabaseService", function() {
+   return require('./database/db.js')("shop_de");
+});
 
-      if (whitelist.weight) {
-        product_info.weight = parseFloat(product_info.weight);
-      } else {
-        delete product_info.weight;
-      }
-
-      if (!whitelist.status) {
-        delete product_info.status;
-      }
-      if (!whitelist.name) {
-        delete product_info.name;
-      }
-      if (!whitelist.sku) {
-        delete product_info.sku;
-      }
-      if (!whitelist.description) {
-        delete product_info.description;
-      }
-      if (!whitelist.short_description) {
-        delete product_info.short_description;
-      }
-
-      if (whitelist.price) {
-        product_info.recommend_price = parseFloat(product_info.recommend_price);
-        product_info.recommend_price_netto = parseFloat(product_info.recommend_price_netto);
-        product_info.cost_price = parseFloat(product_info.cost_price);
-        product_info.price = parseFloat(product_info.price);
-        product_info.vwheritage_price_pound = parseFloat(product_info.vwheritage_price_pound);
-      } else {
-        delete product_info.recommend_price;
-        delete product_info.recommend_price_netto;
-        delete product_info.cost_price;
-        delete product_info.price;
-        delete product_info.vwheritage_price_pound;
-      }
-
-      if (whitelist.stock) {
-        product_info.stock_strichweg_qty = parseFloat(product_info.stock_strichweg_qty);
-        product_info.stock_vwheritage_qty = parseFloat(product_info.stock_vwheritage_qty);
-      } else {
-        delete product_info.stock_strichweg_qty;
-        delete product_info.stock_vwheritage_qty;
-        delete product_info.stock_strichweg_range;
-        delete product_info.stock_strichweg_row;
-      }
-
-      if (whitelist.price && whitelist.tier_price) {
-        for (var i in product_info.tier_price) {
-          product_info.tier_price[i] = {
-            qty: parseFloat(product_info.tier_price[i].price_qty),
-            price: parseFloat(product_info.tier_price[i].price),
-            website: product_info.tier_price[i].website_id,
-            customer_group_id: parseFloat(product_info.tier_price[i].cust_group),
-            price_percent: PriceService.get_percent (parseFloat(product_info.tier_price[i].price), product_info.price)
-          }
-        }
-      } else {
-        delete product_info.tier_price;
-      }
-
-      if (whitelist.price && whitelist.group_price) {
-        for (var i in product_info.group_price) {
-          product_info.group_price[i] = {
-            price: parseFloat(product_info.group_price[i].price),
-            website_id: parseInt(product_info.group_price[i].website_id,10),
-            cust_group: parseFloat(product_info.group_price[i].cust_group),
-            price_percent: PriceService.get_percent (parseFloat(product_info.group_price[i].price), product_info.price)
-          }
-        }
-      } else {
-        delete product_info.group_price;
-      }
-
-      return product_info;
-    }
-  }
-}]);
-
-app.factory("MagentoService", function(ExecService, AsyncService) {
-  var config = require ('../config.json').magento;
-  var magento = require('magento')(config);
-
-  magento.xmlrpc.helper = {
-    get_all_products_from_storeview: function (storeView, cb) {
-      var filter = magento.xmlrpc.auto.set_filter.like_sku ("");
-      magento.xmlrpc.auto.catalog.product.list(filter, storeView, cb);
-    }
-  }
-  return magento;
+app.factory("MagentoService", function() {
+/*  var config = require ('../config.json').magento;
+  return require('magento')(config);*/
 });

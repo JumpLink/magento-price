@@ -13,6 +13,6 @@
     "font-awesome": "latest",
     "bootstrap": "latest",
     "angular-ui-codemirror": "latest",
-    "angular-latest" : "PatternConsulting/bower-angular"
+    "angular-latest": "PatternConsulting/bower-angular"
   }
 }

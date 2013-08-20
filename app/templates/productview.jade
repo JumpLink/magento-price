@@ -3,7 +3,7 @@ div.empty_productview(ng-if="!product_info.name")
 	| Please choose your product!
 form(name="productForm", ng-if="product_info.name")
 	fieldset
-		h1(ng-if="whitelist.name", class="name")
+		h1(class="name")
 			| {{product_info.name}}
 			small(ng-if="product_info.sku")
 				| {{product_info.sku}}

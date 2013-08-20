@@ -1,16 +1,22 @@
 {
   "main": "app/splashscreen.html",
-  "name": "Magento Desktop",
+  "name": "magento-desktop",
   "description": "Manage your Magento Shop",
   "version": "0.0.1",
   "dependencies": {
-  	"nw-gyp": "*",
-    "async": "*",
+    "nw-gyp": "*",
+    "async": "~0.2.9",
     "asyncblock": "*",
     "magento": "JumpLink/node-magento",
-    "libnotify": "*"
+    "libnotify": "*",
+    "nedb": "~0.8.6",
+    "q": "~0.9.6",
+    "less": "~1.4.2"
   },
-  "keywords": [ "Magento", "Desktop" ],
+  "keywords": [
+    "Magento",
+    "Desktop"
+  ],
   "window": {
     "title": "Magento Desktop",
     "icon": "app/images/magento-logo.png",
