@@ -4,7 +4,6 @@ module.exports = function(storeView) {
   var config = require ('../../config.json').magento;
   var magento_api = require('magento')(config);
   var whitelist = require ('../../config.json').product_view;
-  var util = require('util');
   var async = require('async');
 
   var db = {
@@ -12,12 +11,12 @@ module.exports = function(storeView) {
   }
 
   var print = function (object) {
-    console.log( require('util').inspect(object, showHidden=false, depth=2, colorize=true) );
+    return require('util').inspect(object, showHidden=false, depth=2, colorize=true);
   }
 
   db.products.ensureIndex({ fieldName: 'product_id', unique: true }, function (err) {
     if (err) {
-      print (err);
+      console.log (print (err));
     }
   });
 
@@ -167,7 +166,6 @@ module.exports = function(storeView) {
   local.insert_all = function (like_sku, cb_fin) {
     async.waterfall ([
       function (callback) {
-        print ("magento_api.xmlrpc.auto.catalog.product.list");
         filter = magento_api.xmlrpc.auto.set_filter.like_sku (like_sku);
         magento_api.xmlrpc.auto.catalog.product.list(filter, storeView, callback); // callback (error, results)
       },
@@ -180,7 +178,6 @@ module.exports = function(storeView) {
         async.map (result, normalise, callback);
       },
       function (result, callback) {
-        //print (result);
         async.map (result, function (item, cb) {
           db.products.insert (item, cb);
         }, callback);

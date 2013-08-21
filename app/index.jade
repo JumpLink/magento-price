@@ -1,0 +1,20 @@
+doctype 5
+html(lang="en", ng-app="app")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Magento Desktop
+    link(rel="stylesheet", type="text/css", href="stylesheets/style.css")
+    link(rel="stylesheet", type="text/css", href="bower_components/codemirror/lib/codemirror.css")
+    link(rel="stylesheet", type="text/css", href="bower_components/codemirror/theme/ambiance.css")
+  script(type="text/javascript", src="bower_components/codemirror/lib/codemirror.js")
+  script(type="text/javascript", src="bower_components/codemirror/mode/javascript/javascript.js")
+  script(type="text/javascript", src="bower_components/angular-latest/angular.js")
+  script(type="text/javascript", src="bower_components/angular-ui-codemirror/ui-codemirror.js")
+  script(type="text/javascript", src="app.js")
+  script(type="text/javascript", src="services.js")
+  script(type="text/javascript", src="controller.js")
+  script(type="text/javascript", src="directives.js")
+  body
+    navbar
+    div.container(ng-view)
