@@ -54,83 +54,92 @@ function ProductController($scope, DatabaseService, PriceService, NotifyService)
   console.log("whitelist");
   console.log($scope.whitelist);
 
-  $scope.product_info = {};
+  function product_info_class(obj){
+    var object = obj;
+    var json_string = JSON.stringify(obj, null, "  ");
 
-  // FIXME
+    this.__defineGetter__("object", function(){
+      return object;
+    });
+   
+    this.__defineSetter__("object", function(obj){
+      object = obj;
+    });
+
+    this.__defineGetter__("json_string", function(){
+      return JSON.stringify(object, null, "  ");
+    });
+   
+    this.__defineSetter__("json_string", function(json_str){
+      object = JSON.parse(json_str);
+      //json_string = json_str;
+    });
+  }
+
+  $scope.product_info = new product_info_class({});
+
   if ($scope.whitelist.json) {
-    $scope.product_info_json = "";
-    // applays the change on product_info to product_info_json
-    $scope.$watch('product_info', function (newVal) {
-      console.log("data changed!");
-      $scope.product_info_json = JSON.stringify(newVal, null, "  ");
-      $scope.json_refresh = true;
-    }, true);
-
-    // applays the change on product_info_json (codemirror) to product_info 
-    $scope.$watch('product_info_json', function (newVal) {
-      console.log("json changed!");
-      $scope.product_info = JSON.parse(newVal);
-    }, true);
-
-    $scope.reParseJson = function() {
-      console.log("reParseJson");
-      $scope.product_info =JSON.parse($scope.product_info_json);
+    $scope.codemirrorOptions = {
+      mode: 'javascript',
+      lineWrapping: true,
+      lineNumbers: true,
+      theme:'ambiance'
     }
   }
 
   if ($scope.whitelist.tier_price) {
     $scope.tier_price_price_percent_changed = function (price_percent, i) {
       console.log('percent changed: '+price_percent+' index: '+i);
-      $scope.product_info.tier_price[i].price = PriceService.get_price (price_percent, $scope.product_info.price)
+      $scope.product_info.object.tier_price[i].price = PriceService.get_price (price_percent, $scope.product_info.object.price)
     }
 
     $scope.tier_price_normal_changed = function (price, i) {
       console.log('normal changed: '+price+' i: '+i);
-      $scope.product_info.tier_price[i].price_percent = PriceService.get_percent (price, $scope.product_info.price);
+      $scope.product_info.object.tier_price[i].price_percent = PriceService.get_percent (price, $scope.product_info.object.price);
     }
 
     $scope.add_tierprice = function () {
-      var default_percent = 100 - ($scope.product_info.tier_price.length + 1) * 10;
+      var default_percent = 100 - ($scope.product_info.object.tier_price.length + 1) * 10;
       var new_tier_price = {
-        qty: ($scope.product_info.tier_price.length + 1) * 10,
-        price: PriceService.get_price (default_percent, $scope.product_info.price),
+        qty: ($scope.product_info.object.tier_price.length + 1) * 10,
+        price: PriceService.get_price (default_percent, $scope.product_info.object.price),
         website: 0,
-        customer_group_id: $scope.product_info.tier_price.length,
+        customer_group_id: $scope.product_info.object.tier_price.length,
         price_percent: default_percent
       }
-      $scope.product_info.tier_price.push(new_tier_price);
+      $scope.product_info.object.tier_price.push(new_tier_price);
     }
 
     $scope.remove_tierprice = function (index) {
-      $scope.product_info.tier_price.splice(index, 1);
+      $scope.product_info.object.tier_price.splice(index, 1);
     }
   }
 
   if ($scope.whitelist.group_price) {
     $scope.group_price_price_percent_changed = function (price_percent, i) {
       console.log('percent changed: '+price_percent+' index: '+i);
-      $scope.product_info.group_price[i].price = PriceService.get_price (price_percent, $scope.product_info.price)
+      $scope.product_info.object.group_price[i].price = PriceService.get_price (price_percent, $scope.product_info.object.price)
     }
 
     $scope.group_price_normal_changed = function (price, i) {
       console.log('normal changed: '+price+' i: '+i);
-      $scope.product_info.group_price[i].price_percent = PriceService.get_percent (price, $scope.product_info.price);
+      $scope.product_info.object.group_price[i].price_percent = PriceService.get_percent (price, $scope.product_info.object.price);
     }
 
     $scope.add_groupprice = function () {
-      var default_percent = 100 - ($scope.product_info.group_price.length + 1) * 10;
+      var default_percent = 100 - ($scope.product_info.object.group_price.length + 1) * 10;
       var new_group_price = {
-        qty: ($scope.product_info.group_price.length + 1) * 10,
-        price: PriceService.get_price (default_percent, $scope.product_info.price),
+        qty: ($scope.product_info.object.group_price.length + 1) * 10,
+        price: PriceService.get_price (default_percent, $scope.product_info.object.price),
         website_id: 0,
-        cust_group: $scope.product_info.group_price.length,
+        cust_group: $scope.product_info.object.group_price.length,
         price_percent: default_percent
       }
-      $scope.product_info.group_price.push(new_group_price);
+      $scope.product_info.object.group_price.push(new_group_price);
     }
 
     $scope.remove_groupprice = function (index) {
-      $scope.product_info.group_price.splice(index, 1);
+      $scope.product_info.object.group_price.splice(index, 1);
     }
   }
 }
