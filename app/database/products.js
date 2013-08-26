@@ -1,17 +1,40 @@
-module.exports = function(storeView) {
-  var storeView = storeView;
-  var Datastore = require('nedb');
-  var config = require ('../../config.json').magento;
-  var magento_api = require('magento')(config);
-  var whitelist = require ('../../config.json').product_view;
-  var async = require('async');
-
+module.exports = function(storeView, Datastore, config, magento_api, whitelist, async) {
+  
   var db = {
     products : new Datastore({ filename: 'products.db', nodeWebkitAppName: 'magento-desktop', autoload: true })
   }
 
-  var print = function (object) {
-    return require('util').inspect(object, showHidden=false, depth=2, colorize=true);
+  var http = require('http')
+    , fs = require('fs')
+    , url = require("url")
+    , mkdirp = require('mkdirp')
+    , path = require('path')
+    , IMAGE_PATH_LOCAL = config.paths.index.toString() + config.paths.product_image.toString();
+
+  console.log ("IMAGE_PATH_LOCAL "+IMAGE_PATH_LOCAL);
+
+  var print = function (object) { var showHidden,depth,colorize; return require('util').inspect(object, showHidden=false, depth=2, colorize=true);}
+
+  var save_file = function (item, cb) {
+    var url_object = url.parse(item.url);
+    var target_object = url.parse(item.file);
+
+    var request = http.get (url_object, function (res) {
+      var imagedata = '';
+      res.setEncoding('binary');
+      res.on('data', function(chunk){
+        imagedata += chunk;
+      });
+      res.on('end', function(){
+        mkdirp(path.dirname(IMAGE_PATH_LOCAL+target_object.path), function (err) {
+          if(err) cb(err);
+          else
+            fs.writeFile(IMAGE_PATH_LOCAL+target_object.href, imagedata, 'binary', function(err){
+                cb(err);
+            });
+        })
+      });
+    });
   }
 
   db.products.ensureIndex({ fieldName: 'product_id', unique: true }, function (err) {
@@ -135,7 +158,9 @@ module.exports = function(storeView) {
   };
 
   /**
-   *  cb (error, new_product_data)
+   * Update one product locally.
+   * Get product from Magento with product_id and save it on local databse.
+   * cb (error, new_product_data)
    */
   local.updateOne = function (product_id, cb) {
     async.waterfall([
@@ -145,10 +170,16 @@ module.exports = function(storeView) {
         function(old_product_data, callback){
           magento_api.xmlrpc.auto.catalog.product.info (old_product_data.product_id, storeView, function (error, product_data) {
             var new_product_data = normalise(product_data);
-            callback (error, old_product_data, new_product_data)
+            callback (error, new_product_data)
           });
         },
-        function(old_product_data, new_product_data, callback){
+        function(new_product_data, callback){ // get Images
+          magento_api.xmlrpc.manual.catalog_product_attribute_media.list (new_product_data.product_id, storeView, function (error, images) {
+            new_product_data.images = images;
+            callback (error, new_product_data)
+          });
+        },
+        function(new_product_data, callback){
           db.products.update({product_id: product_id}, new_product_data, {}, function (error, numReplaced) {
             if (numReplaced == 1)
               callback (error, new_product_data);
@@ -160,10 +191,41 @@ module.exports = function(storeView) {
   };
 
   /**
+   * Update one product locally.
+   * Get product from Magento with product_id and save it on local databse.
+   * cb (error, new_product_data)
+   */
+  local.insertOne = function (product_id, storeView, cb) {
+    async.waterfall([
+      function(callback){ // get info
+        magento_api.xmlrpc.auto.catalog.product.info (product_id, storeView, function (error, product_data) {
+          var new_product_data = normalise(product_data);
+          callback (error, new_product_data)
+        });
+      },
+      function(new_product_data, callback){ // get images
+        magento_api.xmlrpc.manual.catalog_product_attribute_media.list (new_product_data.product_id, storeView, function (error, images) {
+          new_product_data.images = images;
+          callback (error, new_product_data)
+        });
+      },
+      function(new_product_data, callback){ // save Images locally
+        async.each(new_product_data.images, save_file, function (err) {
+          callback(err, new_product_data);
+        });
+      },
+      function(new_product_data, callback){ // save product locally
+        db.products.insert(new_product_data, callback);
+      }
+    ], cb);
+  };
+
+
+  /**
    * like_sku: e.g. "151" for all products inculing 151 in his sku or "" for all products
    * cb (error, results): error or product list with new _id for db-index
    */
-  local.insert_all = function (like_sku, cb_fin) {
+  local.insert = function (like_sku, storeView, cb_fin) {
     async.waterfall ([
       function (callback) {
         filter = magento_api.xmlrpc.auto.set_filter.like_sku (like_sku);
@@ -171,22 +233,16 @@ module.exports = function(storeView) {
       },
       function (result, callback) {
         async.map (result, function (item, cb) {
-          magento_api.xmlrpc.auto.catalog.product.info (item.product_id, storeView, cb);
-        }, callback);
-      },
-      function (result, callback) {
-        async.map (result, normalise, callback);
-      },
-      function (result, callback) {
-        async.map (result, function (item, cb) {
-          db.products.insert (item, cb);
+          // magento_api.xmlrpc.auto.catalog.product.info (item.product_id, storeView, cb);
+          local.insertOne (item.product_id, storeView, cb);
         }, callback);
       }
     ], cb_fin);
   };
 
   /**
-   *  cb (error, results): results[0] result of remove, results[1] result of insert_all
+   * Update all products in the local database on your Desktop
+   * cb (error, results): results[0] result of remove, results[1] result of insert_all
    */
   local.update = function (like_sku, cb) {
     async.series([
@@ -194,12 +250,16 @@ module.exports = function(storeView) {
           local.remove({},callback)
         },
         function(callback){
-          local.insert_all(like_sku, storeView, callback);
+          local.insert(like_sku, storeView, callback);
         }
     ], cb);
   };
 
-  magento.update = function (product_info, cb) {
+  /**
+   * Update one product on Magento
+   * TODO use async
+   */
+  magento.updateOne = function (product_info, cb) {
     var total_qty = product_info.stock_strichweg_qty + product_info.stock_vwheritage_qty;
     var is_in_stock = (total_qty > 0) ? 1 : 0;
 

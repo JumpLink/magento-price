@@ -17,6 +17,7 @@ app/bower_components
 app/templates/*.html
 app/index.html
 app/stylesheets/*.css
+app/images/products
 
 npm-debug.log
 config.json

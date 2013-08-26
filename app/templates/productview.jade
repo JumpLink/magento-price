@@ -35,6 +35,12 @@ form(name="productForm", ng-if="product_info.object.name")
 						| Weight
 					.panel-body
 						{{product_info.object.weight}} Kilo
+		.panel.panel-default(ng-if="whitelist.image")
+			.panel-heading
+				| Images
+			.panel-body
+				.col-lg-2(ng-repeat="image in product_info.object.images")
+					img.img-thumbnail(ng-src="{{paths.product_image}}{{image.file}}", ng-click="open_file('{{paths.product_image}}{{image.file}}')")
 		.panel.panel-default(ng-if="whitelist.price", ng-if="whitelist.group_price")
 			.panel-heading
 				| Group price

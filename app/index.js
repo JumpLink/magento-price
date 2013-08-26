@@ -1,7 +1,6 @@
 'use strict';
 
 var __dirname = process.cwd()+'/app';
-var util = require('util');
 
 // Dirty workaround
 var app = angular.module("app", ['ui.codemirror']);

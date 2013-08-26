@@ -21,8 +21,16 @@ app.directive("productsbar", [function () {
   return {
     restrict: "E",
     templateUrl: __dirname+'/templates/productsbar.html',
-    controller: function ($scope, $element, $attrs, DatabaseService) {
+    controller: function ($scope, $element, $attrs, DatabaseService, ConfigService) {
       $scope.sku = "";
+      $scope.paths = {
+        product_image : __dirname + ConfigService.paths.product_image
+      }
+
+      $scope.open_file = function (file) {
+        require('nw.gui').Shell.openItem(file);
+      }
+
       DatabaseService.products.local.find ({}, function (error, result) {
         if (error) console.log(error);
         $scope.products = result;

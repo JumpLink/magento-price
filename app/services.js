@@ -73,6 +73,10 @@ app.factory("PriceService", function() {
   }
 });
 
+app.factory("ConfigService", function() {
+   return require ('../config.json');
+});
+
 app.factory("DatabaseService", function() {
    return require('./database/db.js')("shop_de");
 });

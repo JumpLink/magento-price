@@ -48,7 +48,11 @@
               i.icon-resize-full(title="enter fullscreen")
             div(ng-if="fullscreen")
               i.icon-resize-small(title="leave fullscreen")
-            
+        li
+          a(ng-if="!fullscreen")
+            i.icon-circle.red(title="You are offline")
+          a(ng-if="fullscreen")
+            i.icon-circle.green(title="You are online")
       form.navbar-form.navbar-right
         input.form-control(type="text", placeholder="Search")
   div.alert(ng-repeat="alert in alerts", ng-class="alert.class")

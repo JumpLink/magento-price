@@ -51,28 +51,27 @@ function ProductController($scope, DatabaseService, PriceService, NotifyService)
   $scope.magento = DatabaseService.products.magento;
 
   $scope.whitelist = DatabaseService.products.whitelist;
-  console.log("whitelist");
-  console.log($scope.whitelist);
 
+  /**
+   * Class with getters and setters to have two properties with the same content,
+   * one as object, and the other as json-string.
+   * This class is required for codemirror.
+   *  
+   */
   function product_info_class(obj){
     var object = obj;
     var json_string = JSON.stringify(obj, null, "  ");
-
     this.__defineGetter__("object", function(){
       return object;
     });
-   
     this.__defineSetter__("object", function(obj){
       object = obj;
     });
-
     this.__defineGetter__("json_string", function(){
       return JSON.stringify(object, null, "  ");
     });
-   
     this.__defineSetter__("json_string", function(json_str){
       object = JSON.parse(json_str);
-      //json_string = json_str;
     });
   }
 
