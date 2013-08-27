@@ -1,11 +1,11 @@
 onload = function() {
   'use strict';
-  var db = require('./database/db.js')("shop_de");
+  var config = require ('../config.json');
+  //var db = require('./database/db.js')("shop_de", config, './');
   var gui = require('nw.gui');
   var splash = gui.Window.get();
   var index;
   splash.show(); // show splash after page is ready
-  var config = require ('../config.json');
   var async = require('async');
   var fs = require('fs');
   var JADE_PATHS = config.paths.jade;

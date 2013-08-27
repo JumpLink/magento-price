@@ -7,6 +7,10 @@ if (!jumplink)
 
 jumplink.magento = angular.module("jumplink.magento", ['ui.codemirror']);
 
+jumplink.magento.constant('STORE_VIEW','shop_de');
+jumplink.magento.constant('CONFIG', require ('../config.json'));
+jumplink.magento.constant('DIRNAME', process.cwd()+'/app');
+
 jumplink.magento.config(function($routeProvider) {
 
   $routeProvider.when('/home', {

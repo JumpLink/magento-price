@@ -81,10 +81,6 @@ jumplink.magento.factory("ConfigService", function() {
    return require ('../config.json');
 });
 
-jumplink.magento.factory("DatabaseService", function() {
-   return require('./database/db.js')("shop_de");
-});
-
 jumplink.magento.factory("ConnectionTestService", ['DatabaseService', function(DatabaseService) {
   return function (cb) { 
     if (!DatabaseService.magento.store) {
