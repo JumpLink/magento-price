@@ -1,4 +1,4 @@
-app.directive("productview", ['DatabaseService', function (DatabaseService) {
+jumplink.magento.directive("productview", ['DatabaseService', function (DatabaseService) {
   return {
     restrict: "E",
     templateUrl: __dirname+'/templates/productview.html',
@@ -17,7 +17,7 @@ app.directive("productview", ['DatabaseService', function (DatabaseService) {
   }
 }]);
 
-app.directive("productsbar", [function () {
+jumplink.magento.directive("productsbar", [function () {
   return {
     restrict: "E",
     templateUrl: __dirname+'/templates/productsbar.html',
@@ -40,26 +40,10 @@ app.directive("productsbar", [function () {
   }
 }]);
 
-app.directive("navbar", [function () {
+jumplink.magento.directive("navbar", [function () {
   return {
     restrict: "E",
     templateUrl: __dirname+'/templates/navbar.html',
-    controller: function ($scope, $element, $attrs, AlertService) {
-      $scope.nav_collapse = false;
-      $scope.show_dev_tools = function () {
-        require('nw.gui').Window.get().showDevTools();
-      }
-      $scope.reload = function () {
-        require('nw.gui').Window.get().reload();
-      }
-      $scope.fullscreen = require('nw.gui').Window.get().isFullscreen;
-      $scope.toggle_fullscreen = function () {
-        require('nw.gui').Window.get().toggleFullscreen();
-        $scope.fullscreen = !$scope.fullscreen;
-      }
-      $scope.remove_alert = function (index) {
-        AlertService.remove(index);
-      }
-    }
+    controller: 'NavbarController'
   }
 }]);

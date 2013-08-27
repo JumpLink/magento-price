@@ -2,10 +2,12 @@
 
 var __dirname = process.cwd()+'/app';
 
-// Dirty workaround
-var app = angular.module("app", ['ui.codemirror']);
+if (!jumplink)
+  var jumplink = {};
 
-app.config(function($routeProvider) {
+jumplink.magento = angular.module("jumplink.magento", ['ui.codemirror']);
+
+jumplink.magento.config(function($routeProvider) {
 
   $routeProvider.when('/home', {
     templateUrl: __dirname+'/templates/home.html',

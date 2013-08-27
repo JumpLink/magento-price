@@ -179,6 +179,11 @@ module.exports = function(storeView, Datastore, config, magento_api, whitelist, 
             callback (error, new_product_data)
           });
         },
+        function(new_product_data, callback){ // save Images locally
+          async.each(new_product_data.images, save_file, function (err) {
+            callback(err, new_product_data);
+          });
+        },
         function(new_product_data, callback){
           db.products.update({product_id: product_id}, new_product_data, {}, function (error, numReplaced) {
             if (numReplaced == 1)

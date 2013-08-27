@@ -5,7 +5,6 @@
         i.icon-align-justify
       a.navbar-brand(href="#/home")
         img(src="images/magento-logo.svg", height="22px", title="Magento Desktop")
-
     .collapse.navbar-collapse.navbar-ex1-collapse(ng-class="{false: 'collapse', true: 'in'}[nav_collapse]")
       ul.nav.navbar-nav
         li
@@ -34,6 +33,11 @@
         li
           a(href="#/log") Log
       ul.nav.navbar-nav.navbar-right
+        li
+          a(ng-if="!online")
+            i.icon-circle.red(title="You are offline")
+          a(ng-if="online")
+            i.icon-circle.green(title="You are online")
         li.dropdown(ng-class="{true: 'open'}[dropdown.config]")
           a.dropdown-toggle(ng-click="dropdown.config = !dropdown.config")
             i.icon-cogs
@@ -48,11 +52,6 @@
               i.icon-resize-full(title="enter fullscreen")
             div(ng-if="fullscreen")
               i.icon-resize-small(title="leave fullscreen")
-        li
-          a(ng-if="!fullscreen")
-            i.icon-circle.red(title="You are offline")
-          a(ng-if="fullscreen")
-            i.icon-circle.green(title="You are online")
       form.navbar-form.navbar-right
         input.form-control(type="text", placeholder="Search")
   div.alert(ng-repeat="alert in alerts", ng-class="alert.class")

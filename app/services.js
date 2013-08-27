@@ -1,15 +1,19 @@
-/*app.factory("ExecService", function() {
+/*jumplink.magento.factory("ExecService", function() {
   return require('child_process').exec;
 });
 
-app.factory("AsyncService", function() {
+jumplink.magento.factory("AsyncService", function() {
   return require('async');
 });*/
+
+jumplink.magento.factory("DebugService", function() {
+  return function (object) { var showHidden,depth,colorize; return require('util').inspect(object, showHidden=false, depth=2, colorize=true);};
+});
 
 /**
  * Notify some stuff with bootstrap alert under the navbar
  */
-app.factory("AlertService", function($rootScope) {
+jumplink.magento.factory("AlertService", function($rootScope) {
   $rootScope.alerts = [];
   return {
     /* type = success | danger | info | warning */
@@ -47,7 +51,7 @@ app.factory("AlertService", function($rootScope) {
 /**
  * Use nativ Notify on Linux __dirname
  */
-app.factory("NotifyService", function() {
+jumplink.magento.factory("NotifyService", function() {
   var libnotify = require('libnotify');
   return {
     notify: function(msg, options, callback) {
@@ -59,7 +63,7 @@ app.factory("NotifyService", function() {
   return ;
 });
 
-app.factory("PriceService", function() {
+jumplink.magento.factory("PriceService", function() {
   var round = function (num,decimals){
     return Math.round(num*Math.pow(10,decimals))/Math.pow(10,decimals);
   }
@@ -73,15 +77,29 @@ app.factory("PriceService", function() {
   }
 });
 
-app.factory("ConfigService", function() {
+jumplink.magento.factory("ConfigService", function() {
    return require ('../config.json');
 });
 
-app.factory("DatabaseService", function() {
+jumplink.magento.factory("DatabaseService", function() {
    return require('./database/db.js')("shop_de");
 });
 
-app.factory("MagentoService", function() {
-/*  var config = require ('../config.json').magento;
-  return require('magento')(config);*/
-});
+jumplink.magento.factory("ConnectionTestService", ['DatabaseService', function(DatabaseService) {
+  return function (cb) { 
+    if (!DatabaseService.magento.store) {
+      DatabaseService.magento.init(function(err) {
+        if (err)
+          cb (false);
+        else {
+          DatabaseService.magento.core_magento.info(function(error, result) {
+            if (error)
+              cb (false);
+            else 
+              cb (true);
+          });
+        }
+      });
+    }
+  };
+}]);

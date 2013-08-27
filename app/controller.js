@@ -1,10 +1,39 @@
-function HomeController($scope) {
+jumplink.magento.controller('HomeController', ['$scope', function($scope) {
 
-}
+}]);
 
-function CreditmemoController($scope, MagentoService, NotifyService) {
-  MagentoService.xmlrpc.manual.init(function(err) {
-    MagentoService.xmlrpc.manual.sales_order_creditmemo.list(function (error, result) {
+jumplink.magento.controller('NavbarController', ['$rootScope', '$scope', '$element', '$attrs', 'AlertService', 'DatabaseService', 'DebugService', 'ConnectionTestService', function($rootScope, $scope, $element, $attrs, AlertService, DatabaseService, DebugService, ConnectionTestService) {
+  $scope.nav_collapse = false;
+  $scope.show_dev_tools = function () {
+    require('nw.gui').Window.get().showDevTools();
+  }
+  $scope.reload = function () {
+    require('nw.gui').Window.get().reload();
+  }
+  $scope.fullscreen = require('nw.gui').Window.get().isFullscreen;
+  $scope.toggle_fullscreen = function () {
+    require('nw.gui').Window.get().toggleFullscreen();
+    $scope.fullscreen = !$scope.fullscreen;
+  }
+  $scope.remove_alert = function (index) {
+    AlertService.remove(index);
+  }
+  // Test Connection
+  ConnectionTestService(function (online) {
+    $rootScope.online = online;
+    $rootScope.$apply();
+  });
+  var ConnectionTimer = setInterval(function(){
+    ConnectionTestService(function (online) {
+      $rootScope.online = online;
+      $rootScope.$apply();
+    });
+  }, 10000);
+}]);
+
+jumplink.magento.controller('CreditmemoController', ['$scope', 'DatabaseService', 'NotifyService', function($scope, DatabaseService, NotifyService) {
+  DatabaseService.magento.init(function(err) {
+    DatabaseService.magento.sales_order_creditmemo.list(function (error, result) {
       
       if (error || !result) {
         // AlertService.push("Error: ", "Could not save Group Price: "+error, 'danger');
@@ -21,8 +50,8 @@ function CreditmemoController($scope, MagentoService, NotifyService) {
 
   $scope.cancel_creditmemo = function (creditmemoIncrementId) {
     console.log("cancel_creditmemo");
-    MagentoService.xmlrpc.manual.init(function(err) {
-      MagentoService.xmlrpc.manual.sales_order_creditmemo.cancel(creditmemoIncrementId, function (error, result) {
+    DatabaseService.magento.init(function(err) {
+      DatabaseService.magento.sales_order_creditmemo.cancel(creditmemoIncrementId, function (error, result) {
         if (error || !result) {
           NotifyService.notify("Error: Could not cancel Cedit Memo: "+error, { title: 'Magento' });
         } else {
@@ -34,8 +63,8 @@ function CreditmemoController($scope, MagentoService, NotifyService) {
 
   $scope.delete_creditmemo = function (creditmemoIncrementId) {
     console.log("delete_creditmemo");
-    MagentoService.xmlrpc.manual.init(function(err) {
-      MagentoService.xmlrpc.manual.jumplink_order_creditmemo.delete(creditmemoIncrementId, function (error, result) {
+    DatabaseService.magento.init(function(err) {
+      DatabaseService.magento.jumplink_order_creditmemo.delete(creditmemoIncrementId, function (error, result) {
         if (error || !result) {
           NotifyService.notify("Error: Could not delete Cedit Memo: "+error, { title: 'Magento' });
         } else {
@@ -44,10 +73,9 @@ function CreditmemoController($scope, MagentoService, NotifyService) {
       });
     });
   }
-}
+}]);
 
-function ProductController($scope, DatabaseService, PriceService, NotifyService) {
-
+jumplink.magento.controller('ProductController', ['$scope', 'DatabaseService', 'PriceService', 'NotifyService', function($scope, DatabaseService, PriceService, NotifyService) {
   $scope.magento = DatabaseService.products.magento;
 
   $scope.whitelist = DatabaseService.products.whitelist;
@@ -141,4 +169,4 @@ function ProductController($scope, DatabaseService, PriceService, NotifyService)
       $scope.product_info.object.group_price.splice(index, 1);
     }
   }
-}
+}]);
