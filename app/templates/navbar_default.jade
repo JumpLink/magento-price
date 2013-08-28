@@ -1,0 +1,62 @@
+.navbar-fixed-top
+  .navbar.navbar-inverse
+    .navbar-header
+      button.navbar-toggle(type="button", ng-click="nav_collapse = !nav_collapse")
+        i.icon-align-justify
+      a.navbar-brand(href="#/home")
+        img(src="images/magento-logo.svg", height="22px", title="Magento Desktop")
+    .collapse.navbar-collapse.navbar-ex1-collapse(ng-class="{false: 'collapse', true: 'in'}[nav_collapse]")
+      ul.nav.navbar-nav
+        li
+          a(href="#/about")
+            i.icon-info
+        //- TODO make directives of this dropdowns
+        li.dropdown(ng-class="{true: 'open'}[dropdown.products]")
+          a.dropdown-toggle(ng-click="dropdown.products = !dropdown.products")
+            | Products
+            b.caret
+          ul.dropdown-menu
+            li
+              a(href="#/products", ng-click="dropdown.products = !dropdown.products") Fast Edit
+            li
+              a(href="#/productshowconfig", ng-click="dropdown.products = !dropdown.products") Show
+        li.dropdown(ng-class="{true: 'open'}[dropdown.sales]")
+          a.dropdown-toggle(ng-click="dropdown.sales = !dropdown.sales") Sales
+            b.caret
+          ul.dropdown-menu
+            li
+              a(href="#/sale/order", ng-click="dropdown.sales = !dropdown.sales") Order
+            li
+              a(href="#/sale/creditmemo", ng-click="dropdown.sales = !dropdown.sales") Credit Memo
+            li
+              a(href="#/sale/invoice", ng-click="dropdown.sales = !dropdown.sales") Invoice
+            li
+              a(href="#/sale/shipment", ng-click="dropdown.sales = !dropdown.sales") Shipment
+        li
+          a(href="#/log") Log
+      ul.nav.navbar-nav.navbar-right
+        li
+          a(ng-if="!online")
+            i.icon-circle.red(title="You are offline")
+          a(ng-if="online")
+            i.icon-circle.green(title="You are online")
+        li.dropdown(ng-class="{true: 'open'}[dropdown.config]")
+          a.dropdown-toggle(ng-click="dropdown.config = !dropdown.config")
+            i.icon-cogs
+          ul.dropdown-menu
+            li
+              a(href="javascript:void(0)", ng-click="dropdown.config = !dropdown.config; show_dev_tools();") Developer Tools
+            li
+              a(href="javascript:void(0)", ng-click="dropdown.config = !dropdown.config; reload();") Reload
+        li
+          a(href="javascript:void(0)", ng-click="toggle_fullscreen();", title="toggle fullscreen")
+            div(ng-if="!fullscreen")
+              i.icon-resize-full(title="enter fullscreen")
+            div(ng-if="fullscreen")
+              i.icon-resize-small(title="leave fullscreen")
+      form.navbar-form.navbar-right
+        input.form-control(type="text", placeholder="Search")
+  div.alert(ng-repeat="alert in alerts", ng-class="alert.class")
+    button(type="button", class="close", ng-click="remove_alert($index);") &times;
+    strong {{alert.title}}
+    {{alert.message}}

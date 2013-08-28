@@ -18,6 +18,16 @@ jumplink.magento.config(function($routeProvider) {
     controller: 'HomeController'
   });
 
+  $routeProvider.when('/productshowconfig', {
+    templateUrl: __dirname+'/templates/productshowconfig.html',
+    controller: 'PlaylistController'
+  });
+
+  $routeProvider.when('/productshow', {
+    templateUrl: __dirname+'/templates/productshow.html',
+    controller: 'ProductShowController'
+  });
+
   $routeProvider.when('/products', {
     templateUrl: __dirname+'/templates/products.html',
     controller: 'ProductController'

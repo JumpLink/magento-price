@@ -4,9 +4,9 @@
 	.col-lg-9
 		productview(storeview="shop_de")
 .navbar.navbar-fixed-bottom
-	ul.nav.navbar-nav.pull-right
-		li
-			button.btn.btn-default.navbar-btn(type="button", ng-click="magento.updateOne(product_info)")
-				// ng-disabled="productForm.$invalid"
+	.navbar-form.navbar-right
+		.btn-group
+			button.btn.btn-default.navbar-btn(type="button", title="Show Product", ng-click="set_specific(product_info.object)")
+				i.icon-desktop
+			button.btn.btn-default.navbar-btn(type="button", title="Save Product", ng-click="magento.updateOne(product_info.object)")
 				i.icon-save
-				|  Save

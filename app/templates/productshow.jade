@@ -1,0 +1,18 @@
+h1 {{playlist.current.name}}
+	small {{playlist.current.sku}}
+.row
+	.col-lg-2
+		img.img-thumbnail(ng-src="{{__dirname}}{{config.paths.product_image}}{{image.file}}", ng-click="open_file('{{__dirname}}{{config.paths.product_image}}{{image.file}}')")
+.row
+	.col-lg-2
+		.panel.panel-default
+			.panel-heading
+				| Price
+			.panel-body
+				{{playlist.current.price}} €
+	.col-lg-2
+		.panel.panel-default
+			.panel-heading
+				| Weight
+			.panel-body
+				{{playlist.current.weight}} Kilo

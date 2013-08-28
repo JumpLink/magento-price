@@ -2,33 +2,61 @@ jumplink.magento.controller('HomeController', ['$scope', function($scope) {
 
 }]);
 
-jumplink.magento.controller('NavbarController', ['$rootScope', '$scope', '$element', '$attrs', 'AlertService', 'DatabaseService', 'DebugService', 'ConnectionTestService', function($rootScope, $scope, $element, $attrs, AlertService, DatabaseService, DebugService, ConnectionTestService) {
-  $scope.nav_collapse = false;
-  $scope.show_dev_tools = function () {
-    require('nw.gui').Window.get().showDevTools();
-  }
-  $scope.reload = function () {
-    require('nw.gui').Window.get().reload();
-  }
-  $scope.fullscreen = require('nw.gui').Window.get().isFullscreen;
-  $scope.toggle_fullscreen = function () {
-    require('nw.gui').Window.get().toggleFullscreen();
-    $scope.fullscreen = !$scope.fullscreen;
-  }
-  $scope.remove_alert = function (index) {
-    AlertService.remove(index);
-  }
-  // Test Connection
-  ConnectionTestService(function (online) {
-    $rootScope.online = online;
-    $rootScope.$apply();
-  });
-  var ConnectionTimer = setInterval(function(){
+jumplink.magento.controller('NavbarController', ['$rootScope', '$scope', '$element', '$attrs', '$location', 'AlertService', 'DatabaseService', 'DebugService', 'ConnectionTestService', function($rootScope, $scope, $element, $attrs, $location, AlertService, DatabaseService, DebugService, ConnectionTestService) {
+  
+  var testConnection = function () {
     ConnectionTestService(function (online) {
       $rootScope.online = online;
       $rootScope.$apply();
     });
-  }, 10000);
+    var ConnectionTimer = setInterval(function(){
+      ConnectionTestService(function (online) {
+        $rootScope.online = online;
+        $rootScope.$apply();
+      });
+    }, 10000);
+  }
+
+  $scope.fullscreen = require('nw.gui').Window.get().isFullscreen;
+
+  $scope.toggle_fullscreen = function () {
+    require('nw.gui').Window.get().toggleFullscreen();
+    $scope.fullscreen = !$scope.fullscreen;
+  }
+
+  var navbar_default = function () {
+    $scope.nav_collapse = false;
+    console.log($location.path());
+    $scope.show_dev_tools = function () {
+      require('nw.gui').Window.get().showDevTools();
+    }
+
+    $scope.reload = function () {
+      require('nw.gui').Window.get().reload();
+    }
+
+    $scope.remove_alert = function (index) {
+      AlertService.remove(index);
+    }
+    testConnection();
+
+    $scope.template_url = __dirname+'/templates/navbar_default.html';
+  }
+
+  var navbar_product_show = function () {
+    $scope.template_url = __dirname+'/templates/navbar_product_show.html';
+  }
+
+
+  switch($location.path()) {
+    case '/productshow':
+      navbar_product_show ();
+    break;
+    default:
+      navbar_default ();
+    break;
+  }
+
 }]);
 
 jumplink.magento.controller('CreditmemoController', ['$scope', 'DatabaseService', 'NotifyService', function($scope, DatabaseService, NotifyService) {
@@ -75,7 +103,7 @@ jumplink.magento.controller('CreditmemoController', ['$scope', 'DatabaseService'
   }
 }]);
 
-jumplink.magento.controller('ProductController', ['$scope', 'DatabaseService', 'PriceService', 'NotifyService', function($scope, DatabaseService, PriceService, NotifyService) {
+jumplink.magento.controller('ProductController', ['$scope', 'DatabaseService', 'PriceService', 'NotifyService', 'PlaylistService', function($scope, DatabaseService, PriceService, NotifyService, PlaylistService) {
   $scope.magento = DatabaseService.products.magento;
 
   $scope.whitelist = DatabaseService.products.whitelist;
@@ -169,4 +197,97 @@ jumplink.magento.controller('ProductController', ['$scope', 'DatabaseService', '
       $scope.product_info.object.group_price.splice(index, 1);
     }
   }
+}]);
+
+jumplink.magento.controller('PlaylistController', ['$rootScope', '$timeout', 'DatabaseService', 'CarouselService', 'DebugService', 'PlaylistService', function($rootScope, $timeout, DatabaseService, CarouselService, DebugService, PlaylistService) {
+
+
+}]);
+
+jumplink.magento.controller('ProductShowController', ['$scope', '$rootScope', '$timeout', 'CONFIG', 'DIRNAME', 'CarouselService', 'DebugService', function($scope, $rootScope, $timeout, config, __dirname, CarouselService, DebugService) {
+  // Makes this controller available on all windows 
+  global.ProductShowController = window;
+  window.$scope = $scope;
+  $scope.config = config;
+  $scope.__dirname = __dirname;
+
+  $scope.playlist = {
+    index: 0,
+    list: [],
+    current: {}
+  };
+
+  // TODO auslagern
+  var cancel_timer = function (timer, name) {
+    if (typeof(timer) != "undefined") {
+      console.log("cancel "+name+" timer ");
+      console.log(DebugService(timer));
+      console.log(DebugService(typeof(timer)));
+      if(typeof(timer) == "number") // timer comes from?
+        clearInterval(timer); // default javaScript timer
+      else
+        $timeout.cancel(timer); // angularjs timer
+    }
+  }
+  $scope.open_file = function (file) {
+    require('nw.gui').Shell.openItem(file);
+  }
+
+  $scope.set_image = function (image, cb) {
+    console.log("set_image: "+image.file);
+    $scope.image = image;
+    $scope.$apply();
+    cb ("done");
+  }
+
+    $scope.stop = function () {
+      cancel_timer ($scope.ImageTimer, "image");
+      //cancel_timer ($scope.TrackTimer, "product"); // you need to run on main window
+    }
+
+  $scope.set_tracks = function (tracks, cb) {
+    console.log("set_track");
+    $scope.playlist.list = tracks;
+    cb ("done");
+  }
+
+  $scope.play_images = function () {
+    CarouselService($scope.set_image, $scope.playlist.current.images, 300, function (newImageTimer) {
+      cancel_timer ($scope.ImageTimer, "image");
+      $scope.ImageTimer = newImageTimer;
+    });
+  }
+
+  $scope.set_track = function (index, cb) {
+    console.log("set_track");
+    $scope.playlist.index = index
+    $scope.playlist.current = $scope.playlist.list[$scope.playlist.index];
+    //$scope.$apply(); // not needed because the main window run applies the scope
+    $scope.play_images ();
+    cb ("done");
+  }
+
+  $scope.set_next_track = function (cb) {
+    $scope.playlist.index++
+    if ($scope.playlist.index >= $scope.playlist.list.length)
+      $scope.playlist.index = 0;
+    $scope.playlist.current = $scope.playlist.list[$scope.playlist.index];
+    $scope.play_images ();
+    cb ("done");
+  }
+
+  $scope.set_prev_track = function (cb) {
+    $scope.playlist.index--
+    if ($scope.playlist.index < 0)
+      $scope.playlist.index = $scope.playlist.list.length - 1;
+    $scope.playlist.current = $scope.playlist.list[$scope.playlist.index];
+    $scope.play_images ();
+    cb ("done");
+  }
+
+  $scope.set_specific_track = function (track, cb) {
+    $scope.playlist.current = track;
+    $scope.play_images ();
+  }
+
 }]);
