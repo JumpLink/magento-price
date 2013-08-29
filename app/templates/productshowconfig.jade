@@ -1,12 +1,18 @@
 h1 Product Show Config
-button.btn.btn-default(ng-click="open_product_show();")
-	| Open
-button.btn.btn-default(ng-click="stop();")
-	| Stop
-button.btn.btn-default(ng-click="play();")
-	| Play
-button.btn.btn-default(ng-click="next();")
-	| Next
-button.btn.btn-default(ng-click="prev();")
-	| Prev
+
+.btn-group
+	button.btn.btn-default(title="Open new window", ng-click="open_product_show();")
+		i.icon-film
+	//- button.btn.btn-default(title="Close product show window", ng-click="close_product_show();")
+	//- 	i.icon-film
+br
+.btn-group
+	button.btn.btn-default(title="Prev", ng-click="prev();")
+		i.icon-backward
+	button.btn.btn-default(title="Pause", ng-click="stop();")
+		i.icon-pause
+	button.btn.btn-default(title="Play", ng-click="play();")
+		i.icon-play
+	button.btn.btn-default(title="Next", ng-click="next();")
+		i.icon-forward
 h4 {{show_win.playlist.current.name}}

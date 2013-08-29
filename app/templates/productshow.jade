@@ -1,18 +1,20 @@
-h1 {{playlist.current.name}}
-	small {{playlist.current.sku}}
-.row
-	.col-lg-2
-		img.img-thumbnail(ng-src="{{__dirname}}{{config.paths.product_image}}{{image.file}}", ng-click="open_file('{{__dirname}}{{config.paths.product_image}}{{image.file}}')")
-.row
-	.col-lg-2
-		.panel.panel-default
-			.panel-heading
-				| Price
-			.panel-body
-				{{playlist.current.price}} €
-	.col-lg-2
-		.panel.panel-default
-			.panel-heading
-				| Weight
-			.panel-body
-				{{playlist.current.weight}} Kilo
+.product_show
+	.row
+		h1.col-lg-12 {{playlist.current.name}}
+	.row
+		.col-lg-6
+			img.img-thumbnail(ng-src="{{__dirname}}{{config.paths.product_image}}{{image.file}}", ng-click="open_file('{{__dirname}}{{config.paths.product_image}}{{image.file}}')")
+		h3.col-lg-6
+			dl.dl-horizontal
+				dt SKU
+				dd {{playlist.current.sku}}
+				dt Preis
+				dd {{playlist.current.price}} €
+				dt Gewicht
+				dd {{playlist.current.weight}} Kilo
+			p(ng-bind-html-unsafe="playlist.current.short_description")
+			dl
+				dt Beschreibung
+				dd
+					p(ng-bind-html-unsafe="playlist.current.description")
+	qrcode(text="{{product_url}}", version="10", error-correction-level="H", size="200")

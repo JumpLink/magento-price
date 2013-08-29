@@ -1,9 +1,6 @@
-/*jumplink.magento.factory("ExecService", function() {
+jumplink.magento.factory("ExecService", function() {
   return require('child_process').exec;
 });
-*/
-
-
 
 jumplink.magento.factory("nwglobalService", function() {
   return require('nwglobal');
@@ -25,7 +22,31 @@ jumplink.magento.factory("MagentoService", ['CONFIG', function(config) {
   return require('magento')(config.magento);
 }]);
 
-jumplink.magento.factory("CarouselService", function($timeout) {
+jumplink.magento.factory("httpService", [function() {
+  return require('http');
+}]);
+
+jumplink.magento.factory("fsService", [function() {
+  return require('fs');
+}]);
+
+jumplink.magento.factory("urlService", [function() {
+  return require('url');
+}]);
+
+jumplink.magento.factory("mkdirpService", [function() {
+  return require('mkdirp');
+}]);
+
+jumplink.magento.factory("pathService", [function() {
+  return require('path');
+}]);
+
+jumplink.magento.factory("QRCodeService", [function() {
+  return require('qrcode');
+}]);
+
+jumplink.magento.factory("CarouselService", function() {
  return function (setter, items, milliseconds, cb) {
     var index = 0;
     setter (items[index], function (result) { });
@@ -42,6 +63,31 @@ jumplink.magento.factory("CarouselService", function($timeout) {
     }
   }
 });
+
+jumplink.magento.factory("ProductService", ['DebugService', 'DatabaseService', '$rootScope', function(DebugService, DatabaseService, $rootScope) {
+  var setProductList = function () {
+    if (typeof ($rootScope.products) == "undefined" || $rootScope.products.length<=0 ) {
+      if (typeof($rootScope.online) != 'undefined' && $rootScope.online === true) {
+        console.log("online "+$rootScope.online+": magento.find");
+        DatabaseService.products.magento.find ("", function (error, results) {
+          if (error) console.log(DebugService(error));
+          $rootScope.products = results;
+          $rootScope.$apply();
+        });
+      } else {
+        console.log("online "+$rootScope.online+": local.find");
+        DatabaseService.products.local.find ({}, function (error, results) {
+          if (error) console.log(DebugService(error));
+          $rootScope.products = results;
+          $rootScope.$apply();
+        });
+      }
+    }
+  }
+  return {
+    setProductList:setProductList
+  }
+}]);
 
 jumplink.magento.factory("DebugService", function() {
   return function (object) { var showHidden,depth,colorize; return require('util').inspect(object, showHidden=false, depth=2, colorize=true);};
@@ -118,29 +164,41 @@ jumplink.magento.factory("ConfigService", function() {
    return require ('../config.json');
 });
 
-jumplink.magento.factory("ConnectionTestService", ['DatabaseService', function(DatabaseService) {
+jumplink.magento.factory("ConnectionTestService", ['DatabaseService', 'ConfigService', function(DatabaseService, config) {
+  
+
+  function checkDomainAvailable(name, callback) {
+    var dns = require("dns");
+    dns.resolve(name, function (err, addresses) {
+      if (err || typeof(addresses) == "undefined")
+        callback (false);
+      else
+         callback (true);
+    });
+  }
   return function (cb) { 
-    if (!DatabaseService.magento.store) {
-      DatabaseService.magento.init(function(err) {
-        if (err)
-          cb (false);
-        else {
-          DatabaseService.magento.core_magento.info(function(error, result) {
-            if (error)
-              cb (false);
-            else 
-              cb (true);
+    checkDomainAvailable(config.magento.host, function (online) {
+      if (online)
+        if (typeof (DatabaseService.magento.core_magento) == "undefined")
+          DatabaseService.magento.init(function(err) {
+            if (err) cb (false);
+            else DatabaseService.magento.core_magento.info(function(error, result) { if (error) cb (false); else cb (true); });
           });
-        }
-      });
-    }
+        else DatabaseService.magento.core_magento.info(function(error, result) { if (error) cb (false); else cb (true); });
+      else
+        cb (false);
+    });
   };
 }]);
 
 jumplink.magento.factory('PlaylistService', ['$rootScope', '$timeout', 'DatabaseService', 'CarouselService', 'DebugService', function($rootScope, $timeout, DatabaseService, CarouselService, DebugService) {
 
+  // TODO use ProductController
   var generate_playlist  = function (cb) { // cb (error, result)
-    DatabaseService.products.local.find ({}, cb);
+    DatabaseService.products.local.find ({
+      status:'1',
+      images: { $exists: true }
+    }, cb);
   }
 
   var play_playlist = function (setter, length, milliseconds, cb) {
@@ -167,6 +225,14 @@ jumplink.magento.factory('PlaylistService', ['$rootScope', '$timeout', 'Database
       else
         $timeout.cancel(timer); // angularjs timer
     }
+  }
+
+  var close_product_show = function () {
+      $rootScope.product_show_window.close(true);
+  }
+
+  $rootScope.close_product_show = function () {
+    close_product_show ();
   }
 
   $rootScope.open_product_show = function () {
@@ -241,7 +307,7 @@ jumplink.magento.factory('PlaylistService', ['$rootScope', '$timeout', 'Database
         this.on('close', function() {
           this.hide();
           $rootScope.stop();
-          delete $rootScope.product_show_window;
+          //delete $rootScope.product_show_window;
           this.close(true);
         });
       });

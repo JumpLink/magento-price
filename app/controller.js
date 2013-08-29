@@ -3,7 +3,7 @@ jumplink.magento.controller('HomeController', ['$scope', function($scope) {
 }]);
 
 jumplink.magento.controller('NavbarController', ['$rootScope', '$scope', '$element', '$attrs', '$location', 'AlertService', 'DatabaseService', 'DebugService', 'ConnectionTestService', function($rootScope, $scope, $element, $attrs, $location, AlertService, DatabaseService, DebugService, ConnectionTestService) {
-  
+  $rootScope.online = false;
   var testConnection = function () {
     ConnectionTestService(function (online) {
       $rootScope.online = online;
@@ -217,12 +217,13 @@ jumplink.magento.controller('ProductShowController', ['$scope', '$rootScope', '$
     current: {}
   };
 
+  $scope.$watch('playlist.current', function() {
+    $scope.product_url = "http://"+$scope.config.magento.host+"/"+$scope.playlist.current.url_path;
+  });
+
   // TODO auslagern
   var cancel_timer = function (timer, name) {
     if (typeof(timer) != "undefined") {
-      console.log("cancel "+name+" timer ");
-      console.log(DebugService(timer));
-      console.log(DebugService(typeof(timer)));
       if(typeof(timer) == "number") // timer comes from?
         clearInterval(timer); // default javaScript timer
       else
@@ -290,4 +291,24 @@ jumplink.magento.controller('ProductShowController', ['$scope', '$rootScope', '$
     $scope.play_images ();
   }
 
+}]);
+
+jumplink.magento.controller('ConfigController', ['$scope', 'DatabaseService', 'DebugService', function($scope, DatabaseService, DebugService) {
+  $scope.load_all_products = function () {
+    DatabaseService.products.local.insertUpdate ("151-9", function (error, results) {
+      if (error)
+        console.log ("done with error :-( "+DebugService(error));
+      else
+        console.log ("done with no error :-)");
+    });
+  }
+
+  $scope.reload_all_products = function () {
+    DatabaseService.products.local.update ("151-9", function (error, results) {
+      if (error)
+        console.log ("done with error :-( "+DebugService(error));
+      else
+        console.log ("done with no error :-)");
+    });
+  }
 }]);

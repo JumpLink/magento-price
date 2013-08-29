@@ -5,7 +5,7 @@ var __dirname = process.cwd()+'/app';
 if (!jumplink)
   var jumplink = {};
 
-jumplink.magento = angular.module("jumplink.magento", ['ui.codemirror']);
+jumplink.magento = angular.module("jumplink.magento", ['ui.codemirror', 'monospaced.qrcode']);
 
 jumplink.magento.constant('STORE_VIEW','shop_de');
 jumplink.magento.constant('CONFIG', require ('../config.json'));
@@ -41,6 +41,11 @@ jumplink.magento.config(function($routeProvider) {
     templateUrl: __dirname+'/templates/sale/creditmemo.html',
     controller: 'CreditmemoController'
   });
+
+  $routeProvider.when('/config', {
+    templateUrl: __dirname+'/templates/config.html',
+    controller: 'ConfigController'
+  })
 
   $routeProvider.otherwise({ redirectTo: '/products' });
 });

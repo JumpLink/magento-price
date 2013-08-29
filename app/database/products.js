@@ -1,43 +1,50 @@
 jumplink.magento.factory("DatabaseProductService",
-  ['STORE_VIEW', 'CONFIG', 'DatastoreService', 'MagentoService', 'AsyncService', 'DebugService', 'nwglobalService',
-  function(storeView, config, Datastore, magento_api, async, DebugService, nwglobal) {
+  ['STORE_VIEW', 'CONFIG', 'DatastoreService', 'MagentoService', 'AsyncService', 'DebugService', 'nwglobalService', 'httpService', 'fsService', 'urlService', 'mkdirpService', 'pathService',
+  function(storeView, config, Datastore, magento_api, async, DebugService, nwglobal, http, fs, url, mkdirp, path) {
   
   var whitelist = config.product_view;
-
-  console.log(DebugService(async));
+  var IMAGE_PATH_LOCAL = config.paths.index.toString() + config.paths.product_image.toString();
   
   var db = {
     products : new Datastore({ filename: 'products.db', nodeWebkitAppName: 'magento-desktop', autoload: true })
   }
 
-  var http = require('http')
-    , fs = require('fs')
-    , url = require("url")
-    , mkdirp = require('mkdirp')
-    , path = require('path')
-    , IMAGE_PATH_LOCAL = config.paths.index.toString() + config.paths.product_image.toString();
+  fs.exists("./app/images/products/1/7/170244_01_large.jpg", function(exists) {
+    if (exists)
+      console.log("File already exists, do not save file again! ");
+    else
+      console.log("File already exists, do not save file again! ");
+  });
 
-  console.log ("IMAGE_PATH_LOCAL "+IMAGE_PATH_LOCAL);
 
   var save_file = function (item, cb) {
     var url_object = url.parse(item.url);
     var target_object = url.parse(item.file);
+    var complete_target_filename = IMAGE_PATH_LOCAL+target_object.href;
 
-    var request = http.get (url_object, function (res) {
-      var imagedata = '';
-      res.setEncoding('binary');
-      res.on('data', function(chunk){
-        imagedata += chunk;
-      });
-      res.on('end', function(){
-        mkdirp(path.dirname(IMAGE_PATH_LOCAL+target_object.path), function (err) {
-          if(err) cb(err);
-          else
-            fs.writeFile(IMAGE_PATH_LOCAL+target_object.href, imagedata, 'binary', function(err){
-                cb(err);
-            });
-        })
-      });
+    fs.exists(complete_target_filename, function(exists) {
+      if (exists) {
+        console.log("File already exists, do not save file again! "+complete_target_filename);
+        cb (null);
+      } else {
+        var request = http.get (url_object, function (res) {
+          var imagedata = '';
+          res.setEncoding('binary');
+          res.on('data', function(chunk){
+            imagedata += chunk;
+          });
+          res.on('end', function(){
+            mkdirp(path.dirname(IMAGE_PATH_LOCAL+target_object.path), function (err) {
+              if(err) cb(err);
+              else
+                fs.writeFile(complete_target_filename, imagedata, 'binary', function(err){
+                    console.log("File saved! "+complete_target_filename);
+                    cb(err);
+                });
+            })
+          });
+        });
+      }
     });
   }
 
@@ -103,7 +110,6 @@ jumplink.magento.factory("DatabaseProductService",
       delete product_info.stock_strichweg_row;
     }
 
-  // TODO find bug
     if (whitelist.price && whitelist.tier_price && product_info.tier_price) {
       for (var a in product_info.tier_price) {
         product_info.tier_price[a] = {
@@ -141,14 +147,24 @@ jumplink.magento.factory("DatabaseProductService",
   var magento = {};
 
   /**
-   *  cb (error, docs)
+   * cb (error, docs)
+   * Note: This function returns all relevant informations like skus, names, and descriptions.
    */
   local.find = function (query, cb) {
     db.products.find(query, cb);
   };
 
   /**
-   *  cb (error, docs)
+   * cb (error, results)
+   * Note: This function returns just basic informations like skus and names, but not detailed stuff like descriptions
+   */
+  magento.find = function (like_sku, cb) {
+    filter = magento_api.xmlrpc.auto.set_filter.like_sku (like_sku);
+    magento_api.xmlrpc.auto.catalog.product.list(filter, storeView, cb); // callback (error, results)
+  };
+
+  /**
+   * cb (error, docs)
    */
   local.findOne = function (query, cb) {
     db.products.findOne(query, cb);
@@ -165,14 +181,12 @@ jumplink.magento.factory("DatabaseProductService",
    * Update one product locally.
    * Get product from Magento with product_id and save it on local databse.
    * cb (error, new_product_data)
+   * 
    */
-  local.updateOne = function (product_id, cb) {
+  local.updateOne = function (product_id, storeView, cb) {
     async.waterfall ( nwglobal.Array(
         function (callback) {
-          local.findOne ({ product_id: product_id}, callback)
-        },
-        function (old_product_data, callback) {
-          magento_api.xmlrpc.auto.catalog.product.info (old_product_data.product_id, storeView, function (error, product_data) {
+          magento_api.xmlrpc.auto.catalog.product.info (product_id, storeView, function (error, product_data) {
             var new_product_data = normalise(product_data);
             callback (error, new_product_data)
           });
@@ -229,9 +243,22 @@ jumplink.magento.factory("DatabaseProductService",
     ), cb);
   };
 
+  /**
+   * If product_id exists in local database, product will updated, otherwise it will be inserted.
+   * cb (error, new_product_data)
+   */
+  local.insertUpdateOne = function (product_id, storeView, cb) {
+    local.findOne ({ product_id: product_id}, function (err, doc) {
+      if (err || doc == null)
+        local.insertOne (product_id, storeView, cb);
+      else 
+        local.updateOne (product_id, storeView, cb);
+    });
+  };
+
 
   /**
-   * like_sku: e.g. "151" for all products inculing 151 in his sku or "" for all products
+   * like_sku: e.g. "151" for all products including 151 in his sku or "" for all products
    * cb (error, results): error or product list with new _id for db-index
    */
   local.insert = function (like_sku, storeView, cb_fin) {
@@ -242,7 +269,6 @@ jumplink.magento.factory("DatabaseProductService",
       },
       function (result, callback) {
         async.map (result, function (item, cb) {
-          // magento_api.xmlrpc.auto.catalog.product.info (item.product_id, storeView, cb);
           local.insertOne (item.product_id, storeView, cb);
         }, callback);
       }
@@ -250,7 +276,8 @@ jumplink.magento.factory("DatabaseProductService",
   };
 
   /**
-   * Update all products in the local database on your Desktop
+   * REMOVES all products and reinsert all products in the local database on your Desktop.
+   * If you do not want to remove all existing local products, you should use local.insertUpdate
    * cb (error, results): results[0] result of remove, results[1] result of insert_all
    */
   local.update = function (like_sku, cb) {
@@ -262,6 +289,24 @@ jumplink.magento.factory("DatabaseProductService",
           local.insert(like_sku, storeView, callback);
         }
     ], cb);
+  };
+
+  /**
+   * Like local.insertUpdateOne but for all products existing in Magento
+   * cb (error, result)
+   */
+  local.insertUpdate = function (like_sku, cb_fin) {
+    async.waterfall ( nwglobal.Array(
+      function (callback) {
+        filter = magento_api.xmlrpc.auto.set_filter.like_sku (like_sku);
+        magento_api.xmlrpc.auto.catalog.product.list(filter, storeView, callback); // callback (error, results)
+      },
+      function (result, callback) {
+        async.map (result, function (item, cb) {
+          local.insertUpdateOne (item.product_id, storeView, cb);
+        }, callback);
+      }
+    ), cb_fin);
   };
 
   /**
