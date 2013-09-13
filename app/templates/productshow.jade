@@ -3,7 +3,7 @@
 		h1.col-lg-12 {{playlist.current.name}}
 	.row
 		.col-lg-6
-			img.img-thumbnail(ng-src="{{__dirname}}{{config.paths.product_image}}{{image.file}}", ng-click="open_file('{{__dirname}}{{config.paths.product_image}}{{image.file}}')")
+			img.img-thumbnail(ng-if="has_image()", ng-src="{{__dirname}}{{config.paths.product_image}}{{image.file}}", ng-click="open_file('{{__dirname}}{{config.paths.product_image}}{{image.file}}')")
 		h3.col-lg-6
 			dl.dl-horizontal
 				dt SKU

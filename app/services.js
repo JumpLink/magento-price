@@ -65,27 +65,31 @@ jumplink.magento.factory("CarouselService", function() {
 });
 
 jumplink.magento.factory("ProductService", ['DebugService', 'DatabaseService', '$rootScope', function(DebugService, DatabaseService, $rootScope) {
+  var resetProductList = function () {
+    if (typeof($rootScope.online) != 'undefined' && $rootScope.online === true) {
+      console.log("online "+$rootScope.online+": magento.find");
+      DatabaseService.products.magento.find ("", function (error, results) {
+        if (error) console.log(DebugService(error));
+        $rootScope.products = results;
+        $rootScope.$apply();
+      });
+    } else {
+      console.log("online "+$rootScope.online+": local.find");
+      DatabaseService.products.local.find ({}, function (error, results) {
+        if (error) console.log(DebugService(error));
+        $rootScope.products = results;
+        $rootScope.$apply();
+      });
+    }
+  };
   var setProductList = function () {
     if (typeof ($rootScope.products) == "undefined" || $rootScope.products.length<=0 ) {
-      if (typeof($rootScope.online) != 'undefined' && $rootScope.online === true) {
-        console.log("online "+$rootScope.online+": magento.find");
-        DatabaseService.products.magento.find ("", function (error, results) {
-          if (error) console.log(DebugService(error));
-          $rootScope.products = results;
-          $rootScope.$apply();
-        });
-      } else {
-        console.log("online "+$rootScope.online+": local.find");
-        DatabaseService.products.local.find ({}, function (error, results) {
-          if (error) console.log(DebugService(error));
-          $rootScope.products = results;
-          $rootScope.$apply();
-        });
-      }
+      resetProductList();
     }
   }
   return {
-    setProductList:setProductList
+    setProductList:setProductList,
+    resetProductList:resetProductList
   }
 }]);
 
@@ -242,7 +246,7 @@ jumplink.magento.factory('PlaylistService', ['$rootScope', '$timeout', 'Database
         title: "Magento Desktop",
         icon: "app/images/magento-logo.png",
         fullscreen: false,
-        toolbar: true,
+        toolbar: false,
         frame: true,
         show: true,
         position: 'center',
@@ -251,12 +255,12 @@ jumplink.magento.factory('PlaylistService', ['$rootScope', '$timeout', 'Database
       });
 
       $rootScope.product_show_window.on('loaded', function () {
-        // this.setAlwaysOnTop(true);
+        this.setAlwaysOnTop(true);
         $rootScope.show_win = global.ProductShowController.$scope;
 
         $rootScope.set_track = function(index) {
           $rootScope.show_win.set_track(index, function (res) {
-            //$rootScope.$apply(); // this apply applies the $scope of product show window: $scope.show_win also
+            $rootScope.$apply();
           });
         }
 
@@ -271,7 +275,7 @@ jumplink.magento.factory('PlaylistService', ['$rootScope', '$timeout', 'Database
         $rootScope.set_tracks ();
 
         $rootScope.play = function () {
-          play_playlist ($rootScope.set_track, $rootScope.show_win.playlist.list.length, 700, function (newTrackTimer) {
+          play_playlist ($rootScope.set_track, $rootScope.show_win.playlist.list.length, 10000, function (newTrackTimer) {
             cancel_timer ($rootScope.show_win.TrackTimer, "product");
             $rootScope.show_win.TrackTimer = newTrackTimer;
           })

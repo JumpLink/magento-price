@@ -234,6 +234,13 @@ jumplink.magento.controller('ProductShowController', ['$scope', '$rootScope', '$
     require('nw.gui').Shell.openItem(file);
   }
 
+  $scope.has_image = function () {
+    if(typeof($scope.image) != 'undefined' && $scope.image.file.length > 0)
+      return true;
+    else
+      return false;
+  }
+
   $scope.set_image = function (image, cb) {
     console.log("set_image: "+image.file);
     $scope.image = image;
@@ -241,10 +248,17 @@ jumplink.magento.controller('ProductShowController', ['$scope', '$rootScope', '$
     cb ("done");
   }
 
-    $scope.stop = function () {
-      cancel_timer ($scope.ImageTimer, "image");
-      //cancel_timer ($scope.TrackTimer, "product"); // you need to run on main window
+  $scope.unset_image = function () {
+    if (typeof($scope.image) != "undefined") {
+      delete $scope.image;
+      $scope.$apply();
     }
+  }
+
+  $scope.stop = function () {
+    cancel_timer ($scope.ImageTimer, "image");
+    //cancel_timer ($scope.TrackTimer, "product"); // you need to run on main window
+  }
 
   $scope.set_tracks = function (tracks, cb) {
     console.log("set_track");
@@ -253,18 +267,21 @@ jumplink.magento.controller('ProductShowController', ['$scope', '$rootScope', '$
   }
 
   $scope.play_images = function () {
-    CarouselService($scope.set_image, $scope.playlist.current.images, 300, function (newImageTimer) {
-      cancel_timer ($scope.ImageTimer, "image");
-      $scope.ImageTimer = newImageTimer;
-    });
+    if (typeof($scope.playlist.current.images) != "undefined" && $scope.playlist.current.images.length >= 1) {
+      CarouselService($scope.set_image, $scope.playlist.current.images, 3333, function (newImageTimer) {
+        cancel_timer ($scope.ImageTimer, "image");
+        $scope.ImageTimer = newImageTimer;
+      });
+    } else
+      $scope.unset_image ();
   }
 
   $scope.set_track = function (index, cb) {
     console.log("set_track");
     $scope.playlist.index = index
     $scope.playlist.current = $scope.playlist.list[$scope.playlist.index];
-    //$scope.$apply(); // not needed because the main window run applies the scope
     $scope.play_images ();
+    $scope.$apply(); // not needed because the main window run applies the scope
     cb ("done");
   }
 
@@ -274,6 +291,7 @@ jumplink.magento.controller('ProductShowController', ['$scope', '$rootScope', '$
       $scope.playlist.index = 0;
     $scope.playlist.current = $scope.playlist.list[$scope.playlist.index];
     $scope.play_images ();
+    $scope.$apply();
     cb ("done");
   }
 
@@ -283,19 +301,21 @@ jumplink.magento.controller('ProductShowController', ['$scope', '$rootScope', '$
       $scope.playlist.index = $scope.playlist.list.length - 1;
     $scope.playlist.current = $scope.playlist.list[$scope.playlist.index];
     $scope.play_images ();
+    $scope.$apply();
     cb ("done");
   }
 
   $scope.set_specific_track = function (track, cb) {
     $scope.playlist.current = track;
     $scope.play_images ();
+    $scope.$apply();
   }
 
 }]);
 
 jumplink.magento.controller('ConfigController', ['$scope', 'DatabaseService', 'DebugService', function($scope, DatabaseService, DebugService) {
   $scope.load_all_products = function () {
-    DatabaseService.products.local.insertUpdate ("151-9", function (error, results) {
+    DatabaseService.products.local.insertUpdate ("", function (error, results) {
       if (error)
         console.log ("done with error :-( "+DebugService(error));
       else
@@ -304,7 +324,7 @@ jumplink.magento.controller('ConfigController', ['$scope', 'DatabaseService', 'D
   }
 
   $scope.reload_all_products = function () {
-    DatabaseService.products.local.update ("151-9", function (error, results) {
+    DatabaseService.products.local.update ("", function (error, results) {
       if (error)
         console.log ("done with error :-( "+DebugService(error));
       else

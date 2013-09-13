@@ -40,8 +40,12 @@ jumplink.magento.directive("productsbar", ['ProductService', 'DebugService', 'Da
       $scope.open_file = function (file) {
         require('nw.gui').Shell.openItem(file);
       }
-
       ProductService.setProductList ();
+      $scope.resetProductList = ProductService.resetProductList;
+
+      $scope.resetSearchInput = function () {
+        $scope.sku = "";
+      }
     }
   }
 }]);
